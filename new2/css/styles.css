@@ -1,0 +1,417 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fafafa;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.section {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 2.2rem;
+}
+
+h2 {
+  color: #3498db;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+  margin-top: 0;
+  font-size: 1.8rem;
+}
+
+h3 {
+  color: #2980b9;
+  margin-top: 20px;
+  font-size: 1.4rem;
+}
+
+p {
+  margin-bottom: 15px;
+}
+
+#canvas-container {
+  display: flex;
+  justify-content: center;
+  margin: 25px 0;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+canvas {
+  display: block;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: white;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 25px 0;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 12px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.info {
+  background-color: #e8f4fc;
+  padding: 18px;
+  border-radius: 8px;
+  margin: 20px 0;
+  border-left: 4px solid #3498db;
+}
+
+.concept {
+  background-color: #f0f9ff;
+  border-left: 4px solid #3498db;
+  padding: 15px 20px;
+  margin: 20px 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.formula {
+  background-color: #f5f5f5;
+  padding: 12px 15px;
+  border-radius: 6px;
+  font-family: "Courier New", monospace;
+  overflow-x: auto;
+  margin: 15px 0;
+  border: 1px solid #e0e0e0;
+}
+
+.visualization {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.model-diagram {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.model-diagram p {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #555;
+}
+
+#weights-visualization {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 25px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.weight-control {
+  display: flex;
+  align-items: center;
+  margin: 12px 0;
+  width: 100%;
+  max-width: 400px;
+}
+
+.weight-control label {
+  width: 140px;
+  font-weight: 600;
+}
+
+.weight-control input[type="range"] {
+  flex-grow: 1;
+  margin: 0 15px;
+}
+
+.weight-control span {
+  width: 40px;
+  text-align: right;
+  font-family: monospace;
+}
+
+.progress-container {
+  height: 20px;
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  margin: 15px 0;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #4caf50;
+  border-radius: 10px;
+  width: 0%;
+  transition: width 0.5s ease-in-out;
+}
+
+.two-columns {
+  display: flex;
+  gap: 30px;
+  margin: 25px 0;
+}
+
+@media (max-width: 768px) {
+  .two-columns {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+.column {
+  flex: 1;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+code {
+  background-color: #f0f0f0;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: "Courier New", monospace;
+}
+
+.example-point {
+  display: flex;
+  align-items: center;
+  margin: 12px 0;
+}
+
+.point-circle {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  margin-right: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+#model-info,
+#accuracy-info {
+  margin: 10px 0;
+  font-weight: 600;
+}
+
+#accuracy-info {
+  color: #27ae60;
+}
+
+ul {
+  padding-left: 25px;
+}
+
+ul li {
+  margin-bottom: 8px;
+}
+
+/* Neural Network Visualization Styles */
+.network-canvas-container {
+  display: flex;
+  justify-content: center;
+  margin: 25px 0;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+#network-canvas {
+  display: block;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: white;
+}
+
+.network-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f0f9ff;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+  align-items: center;
+}
+
+.layer-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.layer-control label {
+  font-weight: 600;
+  min-width: 100px;
+}
+
+.layer-control input {
+  width: 60px;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.input-controls {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.input-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.input-control label {
+  font-weight: 600;
+}
+
+.input-control input {
+  width: 60px;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.output-values {
+  font-family: monospace;
+  padding: 15px;
+  background-color: #f0f0f0;
+  border-radius: 6px;
+  margin-top: 10px;
+  min-height: 100px;
+}
+
+/* CNN Specific Styles */
+.canvas-container {
+  display: flex;
+  justify-content: center;
+  background-color: #f8f9fa;
+  padding: 5px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.kernel-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.kernel-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kernel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin: 10px 0;
+}
+
+.kernel-grid input {
+  width: 50px;
+  padding: 5px;
+  text-align: center;
+}
+
+.cnn-visualization {
+  margin: 25px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+#convolution-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.feature-maps {
+  margin: 25px 0;
+}
+
+.maps-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.feature-map {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.feature-map h4 {
+  margin-bottom: 10px;
+}
+
+.architecture-diagram {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  overflow-x: auto;
+}

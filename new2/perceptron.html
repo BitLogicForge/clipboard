@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perceptron: Basic Neural Network Concepts</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Understanding Perceptrons: The Building Blocks of Neural Networks</h1>
+
+      <div class="section">
+        <h2>1. Introduction to Perceptrons</h2>
+        <p>
+          A perceptron is the simplest form of a neural network, designed for
+          binary classification problems. Invented by Frank Rosenblatt in 1957,
+          it serves as the foundation for more complex neural network
+          architectures.
+        </p>
+
+        <div class="concept">
+          <h3>Key Concept: The Biological Inspiration</h3>
+          <p>
+            Perceptrons are inspired by biological neurons. Just as neurons in
+            the brain receive signals through dendrites, process them, and fire
+            if the combined signal is strong enough, a perceptron:
+          </p>
+          <ul>
+            <li>Receives inputs (features of data)</li>
+            <li>Applies weights to each input (importance of each feature)</li>
+            <li>Sums the weighted inputs and applies a bias</li>
+            <li>
+              Passes the result through an activation function to produce an
+              output
+            </li>
+          </ul>
+        </div>
+
+        <div class="model-diagram">
+          <canvas id="perceptron-diagram" width="500" height="200"></canvas>
+          <div>
+            <p>
+              Perceptron Model: Inputs (x₁, x₂) → Weights (w₁, w₂) → Sum →
+              Activation → Output
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>2. How Perceptrons Work</h2>
+
+        <div class="concept">
+          <h3>The Perceptron Formula</h3>
+          <p>Mathematically, a perceptron computes:</p>
+          <div class="formula">
+            output = activation( Σ(weights × inputs) + bias )
+          </div>
+          <p>
+            For a perceptron with two inputs (x₁, x₂), two weights (w₁, w₂), and
+            a bias (b):
+          </p>
+          <div class="formula">output = activation( w₁·x₁ + w₂·x₂ + b )</div>
+          <p>
+            The activation function is typically a step function (for classical
+            perceptrons) or a sigmoid function (for modern implementations).
+          </p>
+        </div>
+
+        <div class="two-columns">
+          <div class="column">
+            <h3>The Decision Boundary</h3>
+            <p>
+              For a perceptron with two inputs, the decision boundary is a line
+              in the form:
+            </p>
+            <div class="formula">w₁·x₁ + w₂·x₂ + b = 0</div>
+            <p>This can be rewritten as:</p>
+            <div class="formula">x₂ = (-w₁/w₂)·x₁ - b/w₂</div>
+            <p>Which is a line with:</p>
+            <ul>
+              <li>Slope = -w₁/w₂</li>
+              <li>y-intercept = -b/w₂</li>
+            </ul>
+          </div>
+
+          <div class="column">
+            <h3>Perceptron Learning</h3>
+            <p>
+              During training, the perceptron adjusts its weights and bias using
+              the rule:
+            </p>
+            <div class="formula">
+              w_new = w_old + learning_rate * (expected - predicted) * input
+            </div>
+            <div class="formula">
+              b_new = b_old + learning_rate * (expected - predicted)
+            </div>
+            <p>Where:</p>
+            <ul>
+              <li>learning_rate: Controls how fast the model learns</li>
+              <li>expected: The correct label (0 or 1)</li>
+              <li>predicted: The perceptron's prediction</li>
+              <li>input: The feature value for this weight</li>
+            </ul>
+          </div>
+        </div>
+
+        <div id="weights-visualization">
+          <h3>Experiment with Weights and Bias</h3>
+          <div class="weight-control">
+            <label for="weight1">Weight 1 (w₁):</label>
+            <input
+              type="range"
+              id="weight1"
+              min="-2"
+              max="2"
+              step="0.1"
+              value="1"
+            />
+            <span id="weight1-value">1.0</span>
+          </div>
+          <div class="weight-control">
+            <label for="weight2">Weight 2 (w₂):</label>
+            <input
+              type="range"
+              id="weight2"
+              min="-2"
+              max="2"
+              step="0.1"
+              value="1"
+            />
+            <span id="weight2-value">1.0</span>
+          </div>
+          <div class="weight-control">
+            <label for="bias">Bias (b):</label>
+            <input
+              type="range"
+              id="bias"
+              min="-2"
+              max="2"
+              step="0.1"
+              value="0"
+            />
+            <span id="bias-value">0.0</span>
+          </div>
+          <canvas id="weights-canvas" width="300" height="300"></canvas>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>3. Interactive Perceptron Demonstration</h2>
+
+        <div class="info">
+          <p>
+            This demo shows a perceptron learning to classify points based on
+            which side of a line they fall on. The perceptron learns to
+            approximate the decision boundary (gray line) through training.
+          </p>
+          <div class="example-point">
+            <div class="point-circle" style="background-color: blue"></div>
+            <span>Class 0 (below the line)</span>
+          </div>
+          <div class="example-point">
+            <div class="point-circle" style="background-color: red"></div>
+            <span>Class 1 (above the line)</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="generate-btn">Generate New Data</button>
+          <button id="train-btn">Train Model</button>
+          <button id="step-btn">Train Step-by-Step</button>
+          <button id="reset-btn">Reset Model</button>
+        </div>
+
+        <div id="canvas-container">
+          <canvas id="plot-canvas" width="500" height="500"></canvas>
+        </div>
+
+        <div class="info">
+          <h3>Training Progress:</h3>
+          <div class="progress-container">
+            <div id="train-progress" class="progress-bar"></div>
+          </div>
+          <div id="model-info">Model not trained yet</div>
+          <div id="accuracy-info"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>4. Applications and Limitations</h2>
+
+        <div class="two-columns">
+          <div class="column">
+            <h3>Applications</h3>
+            <ul>
+              <li>
+                <strong>Binary Classification:</strong> Email spam detection,
+                simple disease diagnosis
+              </li>
+              <li>
+                <strong>Building Block:</strong> Foundation for more complex
+                neural networks
+              </li>
+              <li>
+                <strong>Feature Selection:</strong> Can help identify important
+                features
+              </li>
+              <li>
+                <strong>Simple Logic Operations:</strong> Can model AND, OR
+                operations (but not XOR)
+              </li>
+            </ul>
+          </div>
+
+          <div class="column">
+            <h3>Limitations</h3>
+            <ul>
+              <li>
+                <strong>Linear Separability:</strong> Can only solve linearly
+                separable problems
+              </li>
+              <li>
+                <strong>XOR Problem:</strong> Cannot solve XOR without hidden
+                layers
+              </li>
+              <li>
+                <strong>Complex Patterns:</strong> Limited capacity for learning
+                complex patterns
+              </li>
+              <li>
+                <strong>Convergence:</strong> Not guaranteed to converge if data
+                is not linearly separable
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="concept">
+          <h3>The XOR Problem</h3>
+          <p>
+            A classic limitation of simple perceptrons is their inability to
+            solve the XOR (exclusive OR) problem. This requires multiple
+            perceptrons arranged in layers (multi-layer perceptron or MLP).
+          </p>
+          <div class="formula">
+            XOR Truth Table:<br />
+            0 XOR 0 = 0<br />
+            0 XOR 1 = 1<br />
+            1 XOR 0 = 1<br />
+            1 XOR 1 = 0
+          </div>
+          <p>
+            This problem demonstrates why we need more complex neural networks
+            with hidden layers.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load JavaScript modules -->
+    <script src="js/visualization.js"></script>
+    <script src="js/model.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neural Networks: From Simple to Deep</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Interactive Neural Networks: From Simple to Deep</h1>
+
+      <div class="section">
+        <h2>1. Understanding Neural Network Architecture</h2>
+        <p>
+          Neural networks are computational models inspired by the human brain,
+          consisting of layers of interconnected artificial neurons. They excel
+          at recognizing patterns and can be trained to perform complex tasks.
+        </p>
+
+        <div class="concept">
+          <h3>Key Concept: Network Layers</h3>
+          <p>A typical neural network consists of three types of layers:</p>
+          <ul>
+            <li><strong>Input Layer:</strong> Receives the raw data</li>
+            <li>
+              <strong>Hidden Layer(s):</strong> Processes the inputs using
+              weights and activation functions
+            </li>
+            <li>
+              <strong>Output Layer:</strong> Produces the final prediction or
+              classification
+            </li>
+          </ul>
+          <p>
+            The "depth" in deep learning refers to the number of hidden layers
+            in the network - deeper networks can learn more complex patterns.
+          </p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>2. Network Visualization</h2>
+        <div class="controls">
+          <button id="simple-nn-btn">Simple Network</button>
+          <button id="deep-nn-btn">Deep Network</button>
+          <button id="customize-btn">Customize Architecture</button>
+          <button id="randomize-weights-btn">Randomize Weights</button>
+        </div>
+
+        <div id="network-controls" class="network-controls">
+          <div class="layer-control">
+            <label for="input-neurons">Input Neurons:</label>
+            <input
+              type="number"
+              id="input-neurons"
+              min="1"
+              max="10"
+              value="3"
+            />
+          </div>
+          <div class="layer-control">
+            <label for="hidden-layers">Hidden Layers:</label>
+            <input type="number" id="hidden-layers" min="1" max="5" value="1" />
+          </div>
+          <div class="layer-control">
+            <label for="neurons-per-layer">Neurons per Hidden Layer:</label>
+            <input
+              type="number"
+              id="neurons-per-layer"
+              min="1"
+              max="10"
+              value="4"
+            />
+          </div>
+          <div class="layer-control">
+            <label for="output-neurons">Output Neurons:</label>
+            <input
+              type="number"
+              id="output-neurons"
+              min="1"
+              max="5"
+              value="2"
+            />
+          </div>
+          <button id="apply-architecture">Apply Changes</button>
+        </div>
+
+        <div id="network-canvas-container" class="network-canvas-container">
+          <canvas id="network-canvas" width="900" height="500"></canvas>
+        </div>
+
+        <div id="weights-container" class="info">
+          <h3>Weight Information</h3>
+          <div id="selected-weight-info">
+            Click on a connection to view and adjust its weight
+          </div>
+          <div
+            id="weight-adjuster"
+            class="weight-control"
+            style="display: none"
+          >
+            <label for="weight-slider">Adjust Weight:</label>
+            <input
+              type="range"
+              id="weight-slider"
+              min="-2"
+              max="2"
+              step="0.1"
+              value="0.5"
+            />
+            <span id="weight-value">0.5</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>3. Network Behavior Simulation</h2>
+        <p>
+          See how changing weights affects the network's behavior. Try adjusting
+          weights and observe how the signal flows through the network.
+        </p>
+
+        <div class="controls">
+          <button id="propagate-btn">Propagate Signal</button>
+          <button id="clear-signal-btn">Clear Signal</button>
+        </div>
+
+        <div class="input-controls" id="input-controls"></div>
+
+        <div class="formula">
+          <strong>Activation Formula:</strong> f(x) = 1 / (1 + e<sup>-x</sup>)
+          <br />
+          Where x is the weighted sum of inputs plus bias
+        </div>
+
+        <div class="two-columns">
+          <div class="column">
+            <h3>Output Values</h3>
+            <div id="output-values" class="output-values">
+              Propagate a signal to see outputs
+            </div>
+          </div>
+          <div class="column">
+            <h3>Network Properties</h3>
+            <ul>
+              <li>
+                <strong>Total Parameters:</strong>
+                <span id="parameter-count">0</span>
+              </li>
+              <li>
+                <strong>Network Depth:</strong>
+                <span id="network-depth">0</span>
+              </li>
+              <li><strong>Activation Function:</strong> Sigmoid</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>4. Comparing Network Architectures</h2>
+        <div class="two-columns">
+          <div class="column">
+            <h3>Simple Networks</h3>
+            <p>
+              <strong>Advantages:</strong>
+            </p>
+            <ul>
+              <li>Faster training and inference</li>
+              <li>Fewer parameters, less risk of overfitting</li>
+              <li>Easier to interpret</li>
+              <li>Sufficient for simpler problems</li>
+            </ul>
+            <p>
+              <strong>Limitations:</strong>
+            </p>
+            <ul>
+              <li>Limited capacity to learn complex patterns</li>
+              <li>May underfit complex datasets</li>
+            </ul>
+          </div>
+
+          <div class="column">
+            <h3>Deep Networks</h3>
+            <p>
+              <strong>Advantages:</strong>
+            </p>
+            <ul>
+              <li>Can learn hierarchical features</li>
+              <li>Better for complex pattern recognition</li>
+              <li>Greater expressivity and representational power</li>
+              <li>State-of-the-art performance on complex tasks</li>
+            </ul>
+            <p>
+              <strong>Limitations:</strong>
+            </p>
+            <ul>
+              <li>Require more training data</li>
+              <li>Computationally expensive</li>
+              <li>Prone to overfitting without regularization</li>
+              <li>"Black box" nature - harder to interpret</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="concept">
+          <h3>The Universal Approximation Theorem</h3>
+          <p>
+            A key mathematical foundation for neural networks states that even a
+            network with a single hidden layer can approximate any continuous
+            function, given enough neurons. However, deeper networks can often
+            represent the same function with far fewer neurons and learn more
+            efficiently.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load JavaScript modules -->
+    <script src="js/network-visualization.js"></script>
+    <script src="js/network-simulation.js"></script>
+  </body>
+</html>

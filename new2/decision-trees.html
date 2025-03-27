@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Decision Trees and Random Forests: Interactive Guide</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Decision Trees and Random Forests: Interactive Guide</h1>
+
+      <div class="section">
+        <h2>1. Understanding Decision Trees</h2>
+        <p>
+          Decision trees are versatile machine learning algorithms that can
+          perform both classification and regression tasks. They work by
+          recursively splitting the data based on feature values, creating a
+          tree-like structure of decisions that leads to predictions.
+        </p>
+
+        <div class="concept">
+          <h3>Key Concept: How Decision Trees Work</h3>
+          <p>
+            Decision trees make predictions by navigating from the root node to
+            a leaf node through a series of decisions:
+          </p>
+          <ul>
+            <li>
+              <strong>Root Node:</strong> The starting point, contains the
+              entire dataset
+            </li>
+            <li>
+              <strong>Decision Nodes:</strong> Split the data based on feature
+              values
+            </li>
+            <li><strong>Leaf Nodes:</strong> Contain the final predictions</li>
+            <li>
+              <strong>Splitting Criteria:</strong> Metrics like Gini impurity or
+              information gain determine the best splits
+            </li>
+          </ul>
+        </div>
+
+        <div class="model-diagram">
+          <div id="tree-diagram-simple" class="diagram-container"></div>
+          <p>
+            A simple decision tree for predicting whether to play tennis based
+            on weather conditions
+          </p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>2. Interactive Decision Tree Builder</h2>
+
+        <div class="two-columns">
+          <div class="column">
+            <h3>Dataset Selection</h3>
+            <div class="controls">
+              <button id="dataset-circles">Circles Dataset</button>
+              <button id="dataset-xor">XOR Dataset</button>
+              <button id="dataset-spiral">Spiral Dataset</button>
+              <button id="dataset-random">Random Dataset</button>
+            </div>
+            <div id="dataset-canvas-container">
+              <canvas id="dataset-canvas" width="300" height="300"></canvas>
+            </div>
+          </div>
+
+          <div class="column">
+            <h3>Tree Parameters</h3>
+            <div class="weight-control">
+              <label for="max-depth">Max Depth:</label>
+              <input
+                type="range"
+                id="max-depth"
+                min="1"
+                max="10"
+                step="1"
+                value="3"
+              />
+              <span id="max-depth-value">3</span>
+            </div>
+            <div class="weight-control">
+              <label for="min-samples-split">Min Samples to Split:</label>
+              <input
+                type="range"
+                id="min-samples-split"
+                min="2"
+                max="20"
+                step="1"
+                value="5"
+              />
+              <span id="min-samples-split-value">5</span>
+            </div>
+            <div class="weight-control">
+              <label for="impurity-measure">Impurity Measure:</label>
+              <select id="impurity-measure">
+                <option value="gini">Gini Impurity</option>
+                <option value="entropy">Entropy</option>
+              </select>
+            </div>
+            <button id="build-tree-btn" class="action-button">
+              Build Decision Tree
+            </button>
+          </div>
+        </div>
+
+        <div class="visualization-container">
+          <h3>Decision Tree Visualization</h3>
+          <div id="decision-boundary-container">
+            <canvas
+              id="decision-boundary-canvas"
+              width="400"
+              height="400"
+            ></canvas>
+          </div>
+          <div id="tree-structure-container">
+            <div id="tree-structure"></div>
+          </div>
+        </div>
+
+        <div class="info">
+          <h3>Tree Information</h3>
+          <div id="tree-info"></div>
+          <div id="node-details">Click on a node to see its details</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>3. How Trees Make Decisions</h2>
+
+        <div class="interactive-example">
+          <h3>Follow a Sample Through the Tree</h3>
+          <div class="two-columns">
+            <div class="column">
+              <div class="sample-input">
+                <h4>Enter Sample Features</h4>
+                <div id="feature-inputs"></div>
+                <button id="predict-btn">Predict</button>
+              </div>
+            </div>
+            <div class="column">
+              <div id="prediction-path-container">
+                <h4>Decision Path</h4>
+                <div id="prediction-path">
+                  Enter feature values and click "Predict" to see the decision
+                  path
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="concept">
+          <h3>Splitting Criteria Explained</h3>
+          <div class="two-columns">
+            <div class="column">
+              <h4>Gini Impurity</h4>
+              <p>
+                Measures the probability of incorrect classification if randomly
+                picked:
+              </p>
+              <div class="formula">Gini = 1 - Σ(p<sub>i</sub>)<sup>2</sup></div>
+              <p>
+                Where p<sub>i</sub> is the proportion of samples that belong to
+                class i
+              </p>
+            </div>
+            <div class="column">
+              <h4>Entropy</h4>
+              <p>Measures the level of disorder or uncertainty:</p>
+              <div class="formula">
+                Entropy = -Σ p<sub>i</sub> log<sub>2</sub>(p<sub>i</sub>)
+              </div>
+              <p>
+                A value of 0 means perfect purity, higher values mean more mixed
+                classes
+              </p>
+            </div>
+          </div>
+          <div id="impurity-visualization"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>4. From Decision Trees to Random Forests</h2>
+
+        <p>
+          While decision trees are intuitive and easy to interpret, they tend to
+          overfit the training data. Random Forests overcome this limitation by
+          combining multiple decision trees to create a more robust and accurate
+          model.
+        </p>
+
+        <div class="two-columns">
+          <div class="column">
+            <h3>Random Forest Parameters</h3>
+            <div class="weight-control">
+              <label for="n-trees">Number of Trees:</label>
+              <input
+                type="range"
+                id="n-trees"
+                min="1"
+                max="50"
+                step="1"
+                value="10"
+              />
+              <span id="n-trees-value">10</span>
+            </div>
+            <div class="weight-control">
+              <label for="max-features">Max Features per Tree:</label>
+              <select id="max-features">
+                <option value="sqrt">Square Root</option>
+                <option value="log2">Log2</option>
+                <option value="all">All Features</option>
+              </select>
+            </div>
+            <div class="weight-control">
+              <label for="bootstrap">Use Bootstrap Sampling:</label>
+              <input type="checkbox" id="bootstrap" checked />
+            </div>
+            <button id="build-forest-btn">Build Random Forest</button>
+          </div>
+          <div class="column">
+            <h3>Forest Performance</h3>
+            <div id="forest-stats"></div>
+            <div id="performance-comparison"></div>
+          </div>
+        </div>
+
+        <div class="visualization-container">
+          <h3>Random Forest Visualization</h3>
+          <div id="forest-boundary-container">
+            <canvas
+              id="forest-boundary-canvas"
+              width="400"
+              height="400"
+            ></canvas>
+          </div>
+          <div id="forest-structure-container">
+            <div id="forest-sample-trees"></div>
+          </div>
+        </div>
+
+        <div class="concept">
+          <h3>Key Techniques in Random Forests</h3>
+          <ul>
+            <li>
+              <strong>Bagging (Bootstrap Aggregating):</strong> Each tree is
+              trained on a random subset of the data, sampled with replacement
+            </li>
+            <li>
+              <strong>Feature Randomness:</strong> Each tree considers only a
+              random subset of features at each split
+            </li>
+            <li>
+              <strong>Voting/Averaging:</strong> Final prediction is determined
+              by majority vote (classification) or averaging (regression)
+            </li>
+          </ul>
+          <div id="bagging-visualization"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>5. Advantages and Applications</h2>
+
+        <div class="two-columns">
+          <div class="column">
+            <h3>Advantages</h3>
+            <ul>
+              <li>
+                <strong>Interpretability:</strong> Decision trees provide clear
+                decision paths
+              </li>
+              <li>
+                <strong>Handles Mixed Data:</strong> Works with numerical and
+                categorical features
+              </li>
+              <li>
+                <strong>Feature Importance:</strong> Naturally ranks feature
+                importance
+              </li>
+              <li>
+                <strong>Non-parametric:</strong> No assumptions about data
+                distribution
+              </li>
+              <li>
+                <strong>Random Forests:</strong> Reduce overfitting and improve
+                accuracy
+              </li>
+            </ul>
+          </div>
+          <div class="column">
+            <h3>Real-world Applications</h3>
+            <ul>
+              <li>
+                <strong>Banking:</strong> Credit risk assessment and fraud
+                detection
+              </li>
+              <li>
+                <strong>Healthcare:</strong> Disease diagnosis and patient
+                triage
+              </li>
+              <li>
+                <strong>Marketing:</strong> Customer segmentation and churn
+                prediction
+              </li>
+              <li>
+                <strong>Ecology:</strong> Species identification and habitat
+                analysis
+              </li>
+              <li>
+                <strong>Finance:</strong> Stock market prediction and portfolio
+                management
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="feature-importance-container">
+          <h3>Feature Importance Analysis</h3>
+          <div id="feature-importance-chart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load JavaScript modules -->
+    <script src="js/decision-tree-data.js"></script>
+    <script src="js/decision-tree-visualization.js"></script>
+    <script src="js/decision-tree-model.js"></script>
+    <script src="js/random-forest.js"></script>
+  </body>
+</html>

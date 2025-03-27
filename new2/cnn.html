@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Convolutional Neural Networks: Visual Understanding</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Convolutional Neural Networks: Visual Understanding</h1>
+
+      <div class="section">
+        <h2>1. Understanding Convolutions</h2>
+        <p>
+          Convolutional Neural Networks (CNNs) are specialized neural networks
+          designed for processing grid-like data, such as images. The key
+          building block is the convolution operation, which slides a filter
+          over the input data to detect features.
+        </p>
+
+        <div class="concept">
+          <h3>Key Concept: Convolutional Layers</h3>
+          <p>
+            Convolutions work by sliding a small weight matrix (filter/kernel)
+            across the input, performing element-wise multiplication and summing
+            the results to produce a feature map. This operation:
+          </p>
+          <ul>
+            <li>
+              <strong>Preserves spatial relationships</strong> in the input data
+            </li>
+            <li><strong>Reduces parameters</strong> through weight sharing</li>
+            <li>
+              <strong>Detects local patterns</strong> regardless of their
+              position in the image
+            </li>
+            <li>
+              <strong>Creates hierarchical representations</strong> when stacked
+              in layers
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>2. CNN Components Interactive Demonstration</h2>
+
+        <div class="two-columns">
+          <div class="column">
+            <h3>Original Image</h3>
+            <div class="canvas-container">
+              <canvas id="input-canvas" width="200" height="200"></canvas>
+            </div>
+            <div class="controls">
+              <button id="draw-btn">Draw Mode</button>
+              <button id="clear-btn">Clear Canvas</button>
+              <button id="sample-btn">Load Sample</button>
+            </div>
+          </div>
+          <div class="column">
+            <h3>Kernel/Filter Selection</h3>
+            <div class="kernel-selection">
+              <div class="kernel-option">
+                <input
+                  type="radio"
+                  id="edge-detection"
+                  name="kernel"
+                  value="edge"
+                  checked
+                />
+                <label for="edge-detection">Edge Detection</label>
+              </div>
+              <div class="kernel-option">
+                <input type="radio" id="blur" name="kernel" value="blur" />
+                <label for="blur">Blur</label>
+              </div>
+              <div class="kernel-option">
+                <input
+                  type="radio"
+                  id="sharpen"
+                  name="kernel"
+                  value="sharpen"
+                />
+                <label for="sharpen">Sharpen</label>
+              </div>
+              <div class="kernel-option">
+                <input type="radio" id="custom" name="kernel" value="custom" />
+                <label for="custom">Custom</label>
+              </div>
+            </div>
+            <div id="custom-kernel-container" style="display: none">
+              <h4>Custom Kernel Values</h4>
+              <div class="kernel-grid">
+                <input type="number" step="0.1" min="-5" max="5" value="0" />
+                <input type="number" step="0.1" min="-5" max="5" value="0" />
+                <input type="number" step="0.1" min="-5" max="5" value="0" />
+                <input type="number" step="0.1" min="-5" max="5" value="0" />
+                <input type="number" step="0.1" min="-5" max="5" value="1" />
+                <input type="number" step="0.1" min="-5" max="5" value="0" />
+                <input type="number" step="0.1" min="-5" max="5" value="0" />
+                <input type="number" step="0.1" min="-5" max="5" value="0" />
+                <input type="number" step="0.1" min="-5" max="5" value="0" />
+              </div>
+            </div>
+            <button id="apply-filter-btn">Apply Filter</button>
+          </div>
+        </div>
+
+        <div class="cnn-visualization">
+          <h3>Convolution Process</h3>
+          <canvas id="convolution-canvas" width="600" height="300"></canvas>
+          <div id="convolution-controls">
+            <button id="animate-btn">Animate Convolution</button>
+            <label for="stride-control">Stride:</label>
+            <select id="stride-control">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+            <label for="padding-control">Padding:</label>
+            <select id="padding-control">
+              <option value="valid">Valid (No Padding)</option>
+              <option value="same">Same (Preserve Size)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="feature-maps">
+          <h3>Output Feature Maps</h3>
+          <div class="maps-container">
+            <div class="feature-map">
+              <h4>Convolution Output</h4>
+              <canvas id="conv-output" width="200" height="200"></canvas>
+            </div>
+            <div class="feature-map">
+              <h4>After ReLU Activation</h4>
+              <canvas id="relu-output" width="200" height="200"></canvas>
+            </div>
+            <div class="feature-map">
+              <h4>After Max Pooling</h4>
+              <canvas id="pooling-output" width="100" height="100"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>3. CNN Architecture Overview</h2>
+
+        <div class="architecture-diagram">
+          <canvas id="cnn-architecture" width="800" height="200"></canvas>
+        </div>
+
+        <div class="two-columns">
+          <div class="column">
+            <h3>Common CNN Layers</h3>
+            <ul>
+              <li>
+                <strong>Convolutional Layer:</strong> Extracts features using
+                filters
+              </li>
+              <li>
+                <strong>Activation Layer (ReLU):</strong> Introduces
+                non-linearity
+              </li>
+              <li>
+                <strong>Pooling Layer:</strong> Reduces dimensionality and
+                computational load
+              </li>
+              <li>
+                <strong>Fully Connected Layer:</strong> Interprets extracted
+                features for final output
+              </li>
+            </ul>
+          </div>
+          <div class="column">
+            <h3>CNN Applications</h3>
+            <ul>
+              <li>
+                <strong>Image Classification:</strong> Identifying objects in
+                images
+              </li>
+              <li>
+                <strong>Object Detection:</strong> Locating objects within
+                images
+              </li>
+              <li>
+                <strong>Facial Recognition:</strong> Identifying and verifying
+                faces
+              </li>
+              <li>
+                <strong>Medical Imaging:</strong> Disease detection and
+                diagnosis
+              </li>
+              <li>
+                <strong>Self-Driving Cars:</strong> Detecting roads, signs,
+                obstacles
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>4. Advantages and Considerations</h2>
+
+        <div class="two-columns">
+          <div class="column">
+            <h3>Advantages of CNNs</h3>
+            <ul>
+              <li>
+                <strong>Parameter Efficiency:</strong> Fewer parameters than
+                fully connected networks
+              </li>
+              <li>
+                <strong>Spatial Hierarchy:</strong> Captures features at
+                multiple scales
+              </li>
+              <li>
+                <strong>Translation Invariance:</strong> Can recognize objects
+                regardless of position
+              </li>
+              <li>
+                <strong>Feature Learning:</strong> Automatically learns relevant
+                features
+              </li>
+            </ul>
+          </div>
+          <div class="column">
+            <h3>Considerations</h3>
+            <ul>
+              <li>
+                <strong>Computational Cost:</strong> Training can require
+                significant resources
+              </li>
+              <li>
+                <strong>Data Requirements:</strong> Generally need large
+                datasets
+              </li>
+              <li>
+                <strong>Interpretability:</strong> "Black box" nature makes
+                understanding decisions difficult
+              </li>
+              <li>
+                <strong>Architecture Design:</strong> Finding optimal structure
+                requires experimentation
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="concept">
+          <h3>Deeper CNNs and Transfer Learning</h3>
+          <p>
+            Modern CNN architectures like ResNet, VGG, and Inception have tens
+            or hundreds of layers. Instead of training these complex networks
+            from scratch, transfer learning leverages pre-trained models by
+            adapting them to new tasks, significantly reducing training time and
+            data requirements.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load JavaScript modules -->
+    <script src="js/cnn-visualization.js"></script>
+    <script src="js/cnn-simulation.js"></script>
+  </body>
+</html>
