@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson: Training on Small Datasets</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px 10px 0;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        pre {
+            background-color: #eee;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            overflow-x: auto; /* Handle long lines */
+            white-space: pre-wrap; /* Wrap lines */
+            word-wrap: break-word; /* Break long words */
+        }
+        .output-section {
+            margin-top: 15px;
+            border-top: 1px solid #ccc;
+            padding-top: 15px;
+        }
+        .data-point {
+            display: inline-block;
+            border: 1px solid #ccc;
+            padding: 5px;
+            margin: 3px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .data-point.positive { background-color: #c8e6c9; border-color: #a5d6a7;} /* Greenish */
+        .data-point.negative { background-color: #ffcdd2; border-color: #ef9a9a;} /* Reddish */
+        .split-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .split-column {
+            flex: 1;
+            border: 1px dashed #aaa;
+            padding: 10px;
+            border-radius: 5px;
+            min-height: 100px; /* Ensure visibility even when empty */
+        }
+        .accuracy {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+        .explanation {
+            background-color: #e3f2fd; /* Light blue */
+            border-left: 5px solid #2196F3; /* Blue border */
+            padding: 10px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lesson: Training Machine Learning Models on Small Datasets</h1>
+
+        <section>
+            <h2>1. Introduction: What is Machine Learning?</h2>
+            <p>Imagine you want to teach a computer to recognize pictures of cats and dogs. You don't write exact rules like "if pointy ears and whiskers, then cat". Instead, you show it many examples (data!) of cats and dogs, and the computer learns the patterns itself. This is the core idea of Machine Learning (ML).</p>
+            <p>The 'learning' part is called <strong>Training</strong>, and the computer program that learns is called a <strong>Model</strong>.</p>
+        </section>
+
+        <section>
+            <h2>2. The Challenge of Small Datasets</h2>
+            <p>ML models usually love lots of data. The more examples they see, the better they learn general patterns.</p>
+            <p>But what if you only have a <strong>small dataset</strong>? Maybe you have only 20 examples?</p>
+            <div class="explanation">
+                <p><strong>Problem: Overfitting!</strong> With too few examples, the model might just memorize the specific examples you showed it, including any noise or random quirks. It might become perfect on the data it saw during training, but fail badly when it sees new, slightly different examples. It hasn't learned the *real* underlying pattern, it just memorized the answers for the training quiz!</p>
+            </div>
+
+            <h3>Our Example Dataset</h3>
+            <p>Let's imagine a simple task: predicting if a student will pass (1) or fail (0) based on hours studied. We have a very small dataset:</p>
+            <div id="initialDataDisplay">
+                <p><i>Click "Load Data" to see our example data.</i></p>
+            </div>
+            <button id="loadDataBtn">Load Data</button>
+        </section>
+
+        <section id="splittingSection" style="display: none;">
+            <h2>3. The Solution: Splitting Your Data</h2>
+            <p>To check if our model is truly learning or just memorizing, we need a way to test it on data it has <strong>never seen before</strong> during training.</p>
+            <p>The standard approach is to split our small dataset into two parts:</p>
+            <ul>
+                <li><strong>Training Set:</strong> Used to train the model (let it learn the patterns). Usually the larger part (e.g., 70-80%).</li>
+                <li><strong>Test Set (or Validation Set):</strong> Kept separate during training. Used *only* at the end to evaluate how well the model performs on unseen data. This gives us an unbiased idea of its real-world performance.</li>
+            </ul>
+            <div class="explanation">
+                <p>Think of it like studying for an exam. The textbook chapters and practice problems you use to study are your <strong>Training Set</strong>. The final exam, which has questions you haven't seen before, is your <strong>Test Set</strong>. Doing well on the exam proves you actually learned, not just memorized the practice problems.</p>
+            </div>
+            <button id="splitDataBtn" disabled>Split Data (e.g., 80% Train / 20% Test)</button>
+
+            <div class="output-section split-container">
+                <div class="split-column">
+                    <h3>Training Set</h3>
+                    <div id="trainSetDisplay"><p><i>Data will appear here after splitting.</i></p></div>
+                </div>
+                <div class="split-column">
+                    <h3>Test Set</h3>
+                    <div id="testSetDisplay"><p><i>Data will appear here after splitting.</i></p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="trainingSection" style="display: none;">
+            <h2>4. Training the Model (A Simple Example)</h2>
+            <p>Now, we use <strong>only the Training Set</strong> to 'train' our model. For our simple example, let's say our model tries to find a 'threshold' of study hours. If a student studies more than the threshold, it predicts 'Pass (1)', otherwise 'Fail (0)'.</p>
+            <p>The model looks at the training data and picks a threshold that seems to work best for *that specific data*.</p>
+            <div class="explanation">
+              <p><strong>Important:</strong> We are simulating a very, very simple model here! Real ML models are much more complex, but the principle of learning from the training data is the same.</p>
+            </div>
+            <button id="trainModelBtn" disabled>Train Simple Model</button>
+            <div class="output-section">
+                <h3>Model Learned</h3>
+                <div id="modelRuleDisplay"><p><i>The model's learned 'rule' will appear here.</i></p></div>
+            </div>
+        </section>
+
+        <section id="testingSection" style="display: none;">
+            <h2>5. Testing the Model (The Moment of Truth!)</h2>
+            <p>Our model has learned a rule based on the Training Set. Now, we use the <strong>Test Set</strong> (which the model has never seen!) to evaluate its performance.</p>
+            <p>We apply the learned rule to each data point in the Test Set and compare the model's prediction to the actual outcome (Pass/Fail).</p>
+            <button id="testModelBtn" disabled>Test Model on Test Set</button>
+            <div class="output-section">
+                <h3>Test Results</h3>
+                <div id="testResultDisplay"><p><i>Predictions vs Actual results will appear here.</i></p></div>
+                <div id="accuracyDisplay" class="accuracy"></div>
+            </div>
+            <div class="explanation">
+              <p>The accuracy on the test set gives us a realistic measure of how well our model generalizes to new data. If accuracy is high, the model learned well. If it's low (especially if training performance *seemed* high), the model likely overfitted the small training set.</p>
+            </div>
+        </section>
+
+        <section id="summarySection" style="display: none;">
+            <h2>6. Summary & Key Takeaways for Small Data</h2>
+            <ul>
+                <li>Small datasets increase the risk of <strong>overfitting</strong> (memorizing training data instead of learning general patterns).</li>
+                <li><strong>Splitting data</strong> into Training and Test sets is crucial, especially with small data, to get an unbiased evaluation of the model.</li>
+                <li>Train the model <strong>only</strong> on the Training Set.</li>
+                <li>Evaluate the final model <strong>only</strong> on the Test Set.</li>
+                <li>The Test Set performance tells you how well your model is likely to do on new, unseen data.</li>
+            </ul>
+            <p><strong>What else can help with small data?</strong> Techniques like Cross-Validation (splitting data in multiple ways), Data Augmentation (creating more data artificially), or choosing simpler models are often used, but the train/test split is the fundamental first step!</p>
+            <button id="resetBtn">Reset Lesson</button>
+        </section>
+    </div>
+
+    <script>
+        // --- Data ---
+        // Simple dataset: { hoursStudied: number, passed: 0 or 1 }
+        let fullDataset = [];
+        const originalDataset = [
+            { hours: 1, passed: 0 }, { hours: 1.5, passed: 0 },
+            { hours: 2, passed: 0 }, { hours: 2.5, passed: 1 },
+            { hours: 3, passed: 0 }, { hours: 3.5, passed: 1 },
+            { hours: 4, passed: 1 }, { hours: 4.5, passed: 0 }, // Added some noise/exceptions
+            { hours: 5, passed: 1 }, { hours: 5.5, passed: 1 },
+            { hours: 6, passed: 1 }, { hours: 0.5, passed: 0 },
+            { hours: 7, passed: 1 }, { hours: 2.8, passed: 1 },
+            { hours: 4.2, passed: 1 }
+        ];
+
+        let trainSet = [];
+        let testSet = [];
+        let modelRule = null; // Will store the learned threshold
+
+        // --- DOM Elements ---
+        const loadDataBtn = document.getElementById('loadDataBtn');
+        const splitDataBtn = document.getElementById('splitDataBtn');
+        const trainModelBtn = document.getElementById('trainModelBtn');
+        const testModelBtn = document.getElementById('testModelBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const initialDataDisplay = document.getElementById('initialDataDisplay');
+        const trainSetDisplay = document.getElementById('trainSetDisplay');
+        const testSetDisplay = document.getElementById('testSetDisplay');
+        const modelRuleDisplay = document.getElementById('modelRuleDisplay');
+        const testResultDisplay = document.getElementById('testResultDisplay');
+        const accuracyDisplay = document.getElementById('accuracyDisplay');
+
+        const splittingSection = document.getElementById('splittingSection');
+        const trainingSection = document.getElementById('trainingSection');
+        const testingSection = document.getElementById('testingSection');
+        const summarySection = document.getElementById('summarySection');
+
+        // --- Functions ---
+
+        function formatDataPoint(point) {
+            const outcome = point.passed === 1 ? 'Pass' : 'Fail';
+            const cssClass = point.passed === 1 ? 'positive' : 'negative';
+            // Add prediction if available
+            let predictionText = '';
+            if (point.predicted !== undefined) {
+                 const predictionOutcome = point.predicted === 1 ? 'Pass' : 'Fail';
+                 const correct = point.predicted === point.passed;
+                 predictionText = ` | Predicted: ${predictionOutcome} ${correct ? '✅' : '❌'}`;
+            }
+            return `<span class="data-point ${cssClass}">(Hours: ${point.hours}, Result: ${outcome}${predictionText})</span>`;
+        }
+
+        function displayData(element, data) {
+             if (data.length === 0) {
+                 element.innerHTML = "<p><i>No data to display.</i></p>";
+                 return;
+             }
+             element.innerHTML = data.map(formatDataPoint).join(' ');
+        }
+
+        function loadData() {
+            fullDataset = [...originalDataset]; // Create a copy
+            displayData(initialDataDisplay, fullDataset);
+            loadDataBtn.disabled = true;
+            splitDataBtn.disabled = false;
+            splittingSection.style.display = 'block';
+            trainingSection.style.display = 'none';
+            testingSection.style.display = 'none';
+            summarySection.style.display = 'none';
+            // Clear subsequent steps
+            trainSetDisplay.innerHTML = "<p><i>Data will appear here after splitting.</i></p>";
+            testSetDisplay.innerHTML = "<p><i>Data will appear here after splitting.</i></p>";
+            modelRuleDisplay.innerHTML = "<p><i>The model's learned 'rule' will appear here.</i></p>";
+            testResultDisplay.innerHTML = "<p><i>Predictions vs Actual results will appear here.</i></p>";
+            accuracyDisplay.textContent = '';
+        }
+
+        function splitData() {
+            // Simple Shuffle (Fisher-Yates)
+            let shuffled = [...fullDataset];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+
+            // Split (e.g., 80% train, 20% test)
+            const splitIndex = Math.ceil(shuffled.length * 0.8);
+            trainSet = shuffled.slice(0, splitIndex);
+            testSet = shuffled.slice(splitIndex);
+
+             // Ensure test set has at least one item if possible
+            if (testSet.length === 0 && trainSet.length > 0) {
+                 testSet.push(trainSet.pop());
+            }
+             // Ensure train set has at least one item if possible
+             if (trainSet.length === 0 && testSet.length > 0) {
+                 trainSet.push(testSet.pop());
+             }
+
+
+            displayData(trainSetDisplay, trainSet);
+            displayData(testSetDisplay, testSet);
+
+            splitDataBtn.disabled = true;
+            trainModelBtn.disabled = false;
+            testModelBtn.disabled = true; // Can't test before training
+            trainingSection.style.display = 'block';
+            testingSection.style.display = 'none';
+            summarySection.style.display = 'none';
+        }
+
+        function trainModel() {
+            // VERY Simple Model: Find a threshold for 'hours'
+            // Try thresholds between min and max hours in the training set
+            if (trainSet.length === 0) {
+                modelRuleDisplay.innerHTML = "<p>Cannot train on an empty training set!</p>";
+                trainModelBtn.disabled = true;
+                return;
+            }
+
+            let bestThreshold = 0;
+            let bestAccuracy = -1;
+
+            // Get unique hour values present in training data to test as thresholds
+            const hourValues = [...new Set(trainSet.map(p => p.hours))].sort((a, b) => a - b);
+            const potentialThresholds = [];
+            // Consider thresholds halfway between points
+             potentialThresholds.push(hourValues[0] - 0.1); // Threshold below the minimum
+            for(let i=0; i < hourValues.length - 1; i++){
+                potentialThresholds.push((hourValues[i] + hourValues[i+1]) / 2);
+            }
+            potentialThresholds.push(hourValues[hourValues.length - 1] + 0.1); // Threshold above maximum
+
+            for (const threshold of potentialThresholds) {
+                let correctCount = 0;
+                for (const point of trainSet) {
+                    const prediction = point.hours > threshold ? 1 : 0;
+                    if (prediction === point.passed) {
+                        correctCount++;
+                    }
+                }
+                const accuracy = correctCount / trainSet.length;
+                if (accuracy >= bestAccuracy) { // >= prefers higher thresholds for tie-breaking
+                    bestAccuracy = accuracy;
+                    bestThreshold = threshold;
+                }
+            }
+
+            modelRule = { threshold: bestThreshold };
+            modelRuleDisplay.innerHTML = `<p>Learned Rule: Predict PASS (1) if Hours Studied > <strong>${bestThreshold.toFixed(2)}</strong>, otherwise predict FAIL (0).</p> <p>(This rule achieved ${ (bestAccuracy * 100).toFixed(1) }% accuracy on the <i>Training Set</i>).</p>`;
+
+            trainModelBtn.disabled = true;
+            testModelBtn.disabled = (testSet.length === 0); // Disable if test set is empty
+            testingSection.style.display = 'block';
+            summarySection.style.display = 'none';
+        }
+
+        function testModel() {
+            if (!modelRule || testSet.length === 0) {
+                testResultDisplay.innerHTML = "<p>Cannot test model. No rule learned or test set is empty.</p>";
+                testModelBtn.disabled = true;
+                return;
+            }
+
+            let correctCount = 0;
+            const testResultsWithPredictions = [];
+
+            for (const point of testSet) {
+                const prediction = point.hours > modelRule.threshold ? 1 : 0;
+                if (prediction === point.passed) {
+                    correctCount++;
+                }
+                // Add prediction to the point object for display
+                testResultsWithPredictions.push({...point, predicted: prediction });
+            }
+
+            const accuracy = testSet.length > 0 ? (correctCount / testSet.length) : 0;
+
+            // Display results with predictions and correctness indicators
+            displayData(testResultDisplay, testResultsWithPredictions);
+
+            accuracyDisplay.textContent = `Test Set Accuracy: ${correctCount} / ${testSet.length} = ${(accuracy * 100).toFixed(1)}%`;
+
+            testModelBtn.disabled = true;
+            summarySection.style.display = 'block';
+        }
+
+        function resetLesson() {
+            fullDataset = [];
+            trainSet = [];
+            testSet = [];
+            modelRule = null;
+
+            initialDataDisplay.innerHTML = "<p><i>Click \"Load Data\" to see our example data.</i></p>";
+            trainSetDisplay.innerHTML = "<p><i>Data will appear here after splitting.</i></p>";
+            testSetDisplay.innerHTML = "<p><i>Data will appear here after splitting.</i></p>";
+            modelRuleDisplay.innerHTML = "<p><i>The model's learned 'rule' will appear here.</i></p>";
+            testResultDisplay.innerHTML = "<p><i>Predictions vs Actual results will appear here.</i></p>";
+            accuracyDisplay.textContent = '';
+
+            loadDataBtn.disabled = false;
+            splitDataBtn.disabled = true;
+            trainModelBtn.disabled = true;
+            testModelBtn.disabled = true;
+
+            splittingSection.style.display = 'none';
+            trainingSection.style.display = 'none';
+            testingSection.style.display = 'none';
+            summarySection.style.display = 'none';
+        }
+
+
+        // --- Event Listeners ---
+        loadDataBtn.addEventListener('click', loadData);
+        splitDataBtn.addEventListener('click', splitData);
+        trainModelBtn.addEventListener('click', trainModel);
+        testModelBtn.addEventListener('click', testModel);
+        resetBtn.addEventListener('click', resetLesson);
+
+        // --- Initial State ---
+        // (Handled by default HTML and CSS, resetLesson structure)
+
+    </script>
+</body>
+</html>
