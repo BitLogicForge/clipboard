@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finding Key Info: Named Entity Recognition (NER)</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Finding Key Info: Named Entity Recognition (NER)</h1>
+
+    <div class="concept-box">
+      <h2>What is Named Entity Recognition?</h2>
+      <p>
+        Named Entity Recognition (NER) is a technique where an AI identifies and
+        classifies key elements in text into predefined categories such as:
+      </p>
+      <ul>
+        <li>People (names)</li>
+        <li>Organizations (companies, agencies)</li>
+        <li>Locations (countries, cities)</li>
+        <li>Dates and times</li>
+        <li>Monetary values</li>
+        <li>And more...</li>
+      </ul>
+      <p>
+        NER helps structure unstructured text by finding these important
+        elements, making it useful for information extraction, search
+        functionality, and document categorization.
+      </p>
+    </div>
+
+    <div class="interactive-area">
+      <h2>Try it yourself!</h2>
+      <p>
+        Enter some text below, and see how an LLM can identify named entities:
+      </p>
+
+      <textarea id="input-text" placeholder="Enter text here...">
+On July 20, 1969, Neil Armstrong and Buzz Aldrin became the first humans to land on the Moon as part of NASA's Apollo 11 mission. The historic event cost the United States approximately $25.4 billion. Meanwhile, back at Mission Control in Houston, Texas, teams celebrated this milestone achievement for mankind.</textarea
+      >
+
+      <button id="analyze-button">Identify Entities</button>
+
+      <div class="legend">
+        <h3>Entity Types:</h3>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #ffcccb"></div>
+          <span>Person</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #c2e0ff"></div>
+          <span>Organization</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #caffca"></div>
+          <span>Location</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #fffacd"></div>
+          <span>Date</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #e0ffcd"></div>
+          <span>Money</span>
+        </div>
+      </div>
+
+      <div id="output">
+        <p>Highlighted text will appear here...</p>
+      </div>
+
+      <div class="entity-list" id="entity-list">
+        <h3>Detected Entities:</h3>
+        <p>Entities will be listed here after analysis...</p>
+      </div>
+    </div>
+
+    <div class="concept-box">
+      <h2>Applications of Named Entity Recognition</h2>
+      <ul>
+        <li>
+          <strong>Information Extraction:</strong> Pull out key facts from
+          documents automatically
+        </li>
+        <li>
+          <strong>Document Organization:</strong> Automatically tag and
+          categorize documents
+        </li>
+        <li>
+          <strong>Search Enhancement:</strong> Improve search results by
+          understanding entities in queries
+        </li>
+        <li>
+          <strong>Content Recommendation:</strong> Suggest related content based
+          on shared entities
+        </li>
+        <li>
+          <strong>Research Assistance:</strong> Quickly identify key information
+          in scientific papers
+        </li>
+      </ul>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

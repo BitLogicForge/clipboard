@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Creative Control: Text Generation Parameters</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .parameter-controls {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .parameter-value {
+        font-weight: bold;
+        text-align: right;
+      }
+
+      .probability-container {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+      }
+
+      .token-probability {
+        display: flex;
+        margin-bottom: 8px;
+        align-items: center;
+      }
+
+      .token-name {
+        width: 100px;
+      }
+
+      .probability-bar {
+        height: 20px;
+        background-color: #3498db;
+        margin-right: 10px;
+      }
+
+      .probability-value {
+        width: 60px;
+        text-align: right;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Creative Control: Text Generation Parameters</h1>
+
+    <div class="concept-box">
+      <h2>Understanding Text Generation Parameters</h2>
+      <p>
+        When generating text with LLMs, several parameters control the behavior
+        and output:
+      </p>
+      <ul>
+        <li>
+          <strong>Temperature</strong>: Controls randomness. Higher values
+          (e.g., 0.8) produce more creative and diverse outputs, while lower
+          values (e.g., 0.2) make responses more focused and deterministic.
+        </li>
+        <li>
+          <strong>Max Tokens</strong>: Limits the length of the generated
+          response, with one token being roughly 4 characters in English.
+        </li>
+        <li>
+          <strong>Top-p (Nucleus Sampling)</strong>: Controls diversity by
+          considering only the most likely tokens whose cumulative probability
+          exceeds the top-p value.
+        </li>
+      </ul>
+      <p>
+        Tuning these parameters lets you balance between creativity and
+        predictability in AI-generated text.
+      </p>
+    </div>
+
+    <div class="interactive-area">
+      <h2>Try it yourself!</h2>
+      <p>
+        Enter a prompt below and adjust the parameters to see how they affect
+        text generation:
+      </p>
+
+      <textarea id="prompt-input" placeholder="Enter your prompt here...">
+Once upon a time in a distant galaxy,</textarea
+      >
+
+      <div class="parameter-controls">
+        <label for="temperature">Temperature:</label>
+        <input
+          type="range"
+          id="temperature"
+          min="0"
+          max="1"
+          step="0.1"
+          value="0.7"
+        />
+        <span id="temperature-value" class="parameter-value">0.7</span>
+      </div>
+
+      <div class="parameter-controls">
+        <label for="max-tokens">Max Tokens:</label>
+        <input
+          type="range"
+          id="max-tokens"
+          min="10"
+          max="200"
+          step="10"
+          value="50"
+        />
+        <span id="max-tokens-value" class="parameter-value">50</span>
+      </div>
+
+      <div class="parameter-controls">
+        <label for="top-p">Top-p:</label>
+        <input
+          type="range"
+          id="top-p"
+          min="0.1"
+          max="1"
+          step="0.1"
+          value="0.9"
+        />
+        <span id="top-p-value" class="parameter-value">0.9</span>
+      </div>
+
+      <button id="generate-button">Generate Text</button>
+
+      <div id="output">
+        <p>Generated text will appear here...</p>
+      </div>
+
+      <div class="probability-container">
+        <h3>Next Token Probabilities</h3>
+        <p>How parameters affect which token is chosen next:</p>
+        <div id="token-probabilities">
+          <!-- Token probabilities will be displayed here -->
+        </div>
+      </div>
+    </div>
+
+    <div class="concept-box">
+      <h2>Why Parameters Matter</h2>
+      <p>The effect of these parameters on generation:</p>
+      <ul>
+        <li>
+          <strong>Low Temperature</strong>: Results in more predictable text,
+          useful for factual responses or when accuracy is critical.
+        </li>
+        <li>
+          <strong>High Temperature</strong>: Creates more surprising and
+          creative outputs, good for brainstorming or creative writing.
+        </li>
+        <li>
+          <strong>Low Top-p</strong>: Makes the model consider only the most
+          likely options, creating more focused outputs.
+        </li>
+        <li>
+          <strong>High Max Tokens</strong>: Allows longer responses, but may
+          lead to rambling in some cases.
+        </li>
+      </ul>
+      <p>
+        Finding the right parameter balance is key to getting the output style
+        you want from an LLM.
+      </p>
+    </div>
+
+    <script src="text_generation_script.js"></script>
+  </body>
+</html>
