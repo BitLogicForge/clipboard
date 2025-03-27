@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chapter 3: Machine Learning Fundamentals</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #2c3e50;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .demo-box {
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        margin-bottom: 20px;
+      }
+      .btn {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 5px;
+      }
+      .btn:hover {
+        background-color: #2980b9;
+      }
+      canvas {
+        border: 1px solid #ddd;
+        background-color: white;
+      }
+      #result-container {
+        margin-top: 15px;
+        font-weight: bold;
+      }
+      #data-points {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .data-point {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Chapter 3: Machine Learning Fundamentals</h1>
+
+    <div class="container">
+      <section>
+        <h2>Introduction to Machine Learning</h2>
+        <p>
+          Machine Learning is a subset of AI where systems learn from data and
+          improve over time without being explicitly programmed. In this
+          chapter, we'll explore key concepts and demonstrate simple ML
+          algorithms in action.
+        </p>
+      </section>
+
+      <section>
+        <h2>Linear Regression Demo</h2>
+        <p>
+          Linear regression is one of the simplest ML algorithms. It finds the
+          best-fitting straight line through a set of points. Click on the
+          canvas below to add data points, then press "Find Best Fit Line" to
+          see linear regression in action.
+        </p>
+
+        <div class="demo-box">
+          <canvas id="regression-canvas" width="600" height="400"></canvas>
+          <div>
+            <button id="find-line-btn" class="btn">Find Best Fit Line</button>
+            <button id="reset-canvas-btn" class="btn">Reset Canvas</button>
+          </div>
+          <div id="result-container"></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>K-Means Clustering</h2>
+        <p>
+          K-means clustering is an unsupervised learning algorithm that groups
+          similar data points together. Below is a simple demonstration of how
+          k-means works with random data points.
+        </p>
+
+        <div class="demo-box">
+          <div>
+            <label for="cluster-count">Number of clusters: </label>
+            <input
+              type="number"
+              id="cluster-count"
+              min="2"
+              max="10"
+              value="3"
+            />
+            <button id="generate-data-btn" class="btn">
+              Generate Random Data
+            </button>
+            <button id="run-kmeans-btn" class="btn">Run K-Means</button>
+          </div>
+          <canvas id="kmeans-canvas" width="600" height="400"></canvas>
+        </div>
+      </section>
+
+      <section>
+        <h2>Key Machine Learning Concepts</h2>
+        <ul>
+          <li>
+            <strong>Supervised Learning:</strong> Models are trained on labeled
+            data, learning the mapping between inputs and outputs.
+          </li>
+          <li>
+            <strong>Unsupervised Learning:</strong> Models find patterns in
+            unlabeled data.
+          </li>
+          <li>
+            <strong>Reinforcement Learning:</strong> Models learn through trial
+            and error, receiving feedback from actions.
+          </li>
+          <li>
+            <strong>Overfitting:</strong> When a model learns the training data
+            too well, including its noise and outliers.
+          </li>
+          <li>
+            <strong>Underfitting:</strong> When a model is too simple to capture
+            the underlying pattern in the data.
+          </li>
+          <li>
+            <strong>Feature Engineering:</strong> The process of selecting and
+            transforming variables for a model.
+          </li>
+        </ul>
+      </section>
+
+      <div class="navigation">
+        <a href="chapter2.html" class="btn">← Previous Chapter</a>
+        <a href="chapter4.html" class="btn">Next Chapter →</a>
+      </div>
+    </div>
+
+    <script>
+      // Linear Regression Demo
+      const regressionCanvas = document.getElementById("regression-canvas");
+      const regressionCtx = regressionCanvas.getContext("2d");
+      const findLineBtn = document.getElementById("find-line-btn");
+      const resetCanvasBtn = document.getElementById("reset-canvas-btn");
+      const resultContainer = document.getElementById("result-container");
+
+      let points = [];
+
+      // Initialize the canvas
+      function initRegressionCanvas() {
+        regressionCtx.fillStyle = "white";
+        regressionCtx.fillRect(
+          0,
+          0,
+          regressionCanvas.width,
+          regressionCanvas.height
+        );
+
+        // Draw axes
+        regressionCtx.strokeStyle = "#ccc";
+        regressionCtx.beginPath();
+        regressionCtx.moveTo(0, regressionCanvas.height / 2);
+        regressionCtx.lineTo(
+          regressionCanvas.width,
+          regressionCanvas.height / 2
+        );
+        regressionCtx.moveTo(regressionCanvas.width / 2, 0);
+        regressionCtx.lineTo(
+          regressionCanvas.width / 2,
+          regressionCanvas.height
+        );
+        regressionCtx.stroke();
+      }
+
+      // Add a data point when clicking on the canvas
+      regressionCanvas.addEventListener("click", function (e) {
+        const rect = regressionCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Draw the point
+        regressionCtx.fillStyle = "blue";
+        regressionCtx.beginPath();
+        regressionCtx.arc(x, y, 5, 0, Math.PI * 2);
+        regressionCtx.fill();
+
+        // Store the point for regression
+        points.push({ x, y });
+      });
+
+      // Find best fit line using simple linear regression
+      findLineBtn.addEventListener("click", function () {
+        if (points.length < 2) {
+          resultContainer.textContent = "Need at least 2 points for regression";
+          return;
+        }
+
+        // Calculate the line using least squares method
+        let sumX = 0,
+          sumY = 0,
+          sumXY = 0,
+          sumX2 = 0;
+
+        for (const point of points) {
+          sumX += point.x;
+          sumY += point.y;
+          sumXY += point.x * point.y;
+          sumX2 += point.x * point.x;
+        }
+
+        const n = points.length;
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+
+        // Draw the line
+        regressionCtx.clearRect(
+          0,
+          0,
+          regressionCanvas.width,
+          regressionCanvas.height
+        );
+        initRegressionCanvas();
+
+        // Redraw points
+        for (const point of points) {
+          regressionCtx.fillStyle = "blue";
+          regressionCtx.beginPath();
+          regressionCtx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+          regressionCtx.fill();
+        }
+
+        // Draw regression line
+        regressionCtx.strokeStyle = "red";
+        regressionCtx.lineWidth = 2;
+        regressionCtx.beginPath();
+        regressionCtx.moveTo(0, intercept);
+        regressionCtx.lineTo(
+          regressionCanvas.width,
+          slope * regressionCanvas.width + intercept
+        );
+        regressionCtx.stroke();
+
+        // Display equation
+        resultContainer.textContent = `Linear Regression Equation: y = ${slope.toFixed(
+          2
+        )}x + ${intercept.toFixed(2)}`;
+      });
+
+      // Reset canvas
+      resetCanvasBtn.addEventListener("click", function () {
+        points = [];
+        regressionCtx.clearRect(
+          0,
+          0,
+          regressionCanvas.width,
+          regressionCanvas.height
+        );
+        initRegressionCanvas();
+        resultContainer.textContent = "";
+      });
+
+      // K-Means Clustering Demo
+      const kmeansCanvas = document.getElementById("kmeans-canvas");
+      const kmeansCtx = kmeansCanvas.getContext("2d");
+      const clusterCountInput = document.getElementById("cluster-count");
+      const generateBtn = document.getElementById("generate-data-btn");
+      const runKmeansBtn = document.getElementById("run-kmeans-btn");
+
+      let dataPoints = [];
+      let centroids = [];
+      let clusters = [];
+
+      // Initialize k-means canvas
+      function initKmeansCanvas() {
+        kmeansCtx.fillStyle = "white";
+        kmeansCtx.fillRect(0, 0, kmeansCanvas.width, kmeansCanvas.height);
+      }
+
+      // Generate random data points
+      generateBtn.addEventListener("click", function () {
+        dataPoints = [];
+        centroids = [];
+        clusters = [];
+
+        initKmeansCanvas();
+
+        // Generate random data points
+        const numPoints = 100;
+        for (let i = 0; i < numPoints; i++) {
+          const x = Math.random() * kmeansCanvas.width;
+          const y = Math.random() * kmeansCanvas.height;
+          dataPoints.push({ x, y });
+
+          // Draw the point
+          kmeansCtx.fillStyle = "black";
+          kmeansCtx.beginPath();
+          kmeansCtx.arc(x, y, 4, 0, Math.PI * 2);
+          kmeansCtx.fill();
+        }
+      });
+
+      // Run K-means clustering
+      runKmeansBtn.addEventListener("click", function () {
+        if (dataPoints.length === 0) {
+          alert("Generate data first!");
+          return;
+        }
+
+        const k = parseInt(clusterCountInput.value);
+
+        // Initialize k random centroids
+        centroids = [];
+        for (let i = 0; i < k; i++) {
+          const randomIndex = Math.floor(Math.random() * dataPoints.length);
+          centroids.push({
+            x: dataPoints[randomIndex].x,
+            y: dataPoints[randomIndex].y,
+            color: `hsl(${(360 * i) / k}, 80%, 60%)`,
+          });
+        }
+
+        // Perform k-means iterations
+        for (let iter = 0; iter < 10; iter++) {
+          // Assign each point to nearest centroid
+          clusters = Array(k)
+            .fill()
+            .map(() => []);
+
+          for (let i = 0; i < dataPoints.length; i++) {
+            const point = dataPoints[i];
+            let minDist = Infinity;
+            let closestCentroid = 0;
+
+            for (let j = 0; j < centroids.length; j++) {
+              const centroid = centroids[j];
+              const dist = Math.sqrt(
+                Math.pow(point.x - centroid.x, 2) +
+                  Math.pow(point.y - centroid.y, 2)
+              );
+
+              if (dist < minDist) {
+                minDist = dist;
+                closestCentroid = j;
+              }
+            }
+
+            clusters[closestCentroid].push(point);
+          }
+
+          // Update centroids
+          for (let i = 0; i < k; i++) {
+            if (clusters[i].length > 0) {
+              let sumX = 0,
+                sumY = 0;
+
+              for (const point of clusters[i]) {
+                sumX += point.x;
+                sumY += point.y;
+              }
+
+              centroids[i].x = sumX / clusters[i].length;
+              centroids[i].y = sumY / clusters[i].length;
+            }
+          }
+        }
+
+        // Draw the final clusters
+        initKmeansCanvas();
+
+        // Draw points with cluster colors
+        for (let i = 0; i < k; i++) {
+          for (const point of clusters[i]) {
+            kmeansCtx.fillStyle = centroids[i].color;
+            kmeansCtx.beginPath();
+            kmeansCtx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+            kmeansCtx.fill();
+          }
+        }
+
+        // Draw centroids
+        for (const centroid of centroids) {
+          kmeansCtx.fillStyle = "black";
+          kmeansCtx.strokeStyle = centroid.color;
+          kmeansCtx.lineWidth = 2;
+          kmeansCtx.beginPath();
+          kmeansCtx.arc(centroid.x, centroid.y, 8, 0, Math.PI * 2);
+          kmeansCtx.fill();
+          kmeansCtx.stroke();
+        }
+      });
+
+      // Initialize canvases
+      window.addEventListener("load", function () {
+        initRegressionCanvas();
+        initKmeansCanvas();
+      });
+    </script>
+  </body>
+</html>
