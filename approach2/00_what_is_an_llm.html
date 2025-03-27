@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What is a Large Language Model?</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .model-size-comparison {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .model-bar {
+        background-color: #3498db;
+        height: 30px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+        color: white;
+        font-weight: bold;
+        transition: width 0.5s ease-in-out;
+      }
+
+      .prediction-container {
+        margin-top: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .prediction-word {
+        background-color: #f1f1f1;
+        border: 1px solid #ddd;
+        border-radius: 15px;
+        padding: 5px 10px;
+        font-size: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .probability {
+        font-size: 12px;
+        color: #666;
+        margin-top: 3px;
+      }
+
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top-color: #3498db;
+        animation: spin 1s ease-in-out infinite;
+        margin-left: 10px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>What is a Large Language Model?</h1>
+
+    <div class="concept-box">
+      <h2>Understanding LLMs</h2>
+      <p>
+        A <strong>Large Language Model (LLM)</strong> is a type of artificial
+        intelligence system that has been trained on vast amounts of text data
+        to predict and generate human-like text.
+      </p>
+      <p>
+        At its core, an LLM is simply a sophisticated
+        <strong>text prediction system</strong>. When you provide some text (a
+        "prompt"), the model predicts what text is likely to come next, one
+        token (roughly a word or word piece) at a time.
+      </p>
+      <p>What makes LLMs "large" is their immense scale:</p>
+      <ul>
+        <li>
+          <strong>Parameters:</strong> Modern LLMs contain billions or even
+          trillions of parameters (the values the model learns during training)
+        </li>
+        <li>
+          <strong>Training Data:</strong> They're trained on massive datasets -
+          hundreds of billions of words from books, articles, websites, and
+          other sources
+        </li>
+        <li>
+          <strong>Computing Power:</strong> Training requires enormous
+          computational resources - sometimes thousands of specialized computer
+          chips running for weeks
+        </li>
+      </ul>
+    </div>
+
+    <div class="interactive-area">
+      <h2>Try it yourself!</h2>
+      <p>
+        Type a few words below and see how an LLM predicts what might come next:
+      </p>
+
+      <div>
+        <input
+          type="text"
+          id="prompt-input"
+          placeholder="Enter some text..."
+          style="width: 70%; padding: 8px; font-size: 16px"
+        />
+        <button id="predict-button">Predict Next Words</button>
+        <span
+          id="loading-indicator"
+          style="display: none"
+          class="loading"
+        ></span>
+      </div>
+
+      <div id="prediction-output" class="prediction-container">
+        <!-- Predictions will appear here -->
+      </div>
+
+      <h3>Comparing Models by Size</h3>
+      <p>See how the number of parameters compares across different models:</p>
+
+      <div class="model-size-comparison" id="model-comparison">
+        <!-- Model comparison bars will appear here -->
+      </div>
+    </div>
+
+    <div class="concept-box">
+      <h2>How LLMs Work</h2>
+      <p>
+        LLMs are built on a neural network architecture called
+        <strong>Transformers</strong>, which excel at understanding the context
+        and relationships between words.
+      </p>
+      <p>The training process involves:</p>
+      <ol>
+        <li>
+          <strong>Pretraining:</strong> The model is given billions of examples
+          of text and learns to predict missing or next words
+        </li>
+        <li>
+          <strong>Fine-tuning:</strong> The model may be further trained on
+          specific types of data or with human feedback
+        </li>
+      </ol>
+      <p>
+        Despite their complexity, the core function of LLMs remains simple:
+        given some text, predict what comes next. But from this simple ability
+        emerges seemingly intelligent behaviors like answering questions,
+        writing essays, summarizing content, translating languages, and even
+        generating code.
+      </p>
+    </div>
+
+    <div class="concept-box">
+      <h2>What LLMs Can and Cannot Do</h2>
+      <p>
+        <strong>Capabilities:</strong>
+      </p>
+      <ul>
+        <li>Generate human-like text across various domains</li>
+        <li>Answer questions based on their training data</li>
+        <li>Summarize information</li>
+        <li>Translate between languages</li>
+        <li>Write creative content</li>
+      </ul>
+      <p>
+        <strong>Limitations:</strong>
+      </p>
+      <ul>
+        <li>No true understanding or consciousness</li>
+        <li>
+          Cannot access the internet or real-time information unless connected
+          to other systems
+        </li>
+        <li>May generate incorrect information confidently (hallucinations)</li>
+        <li>Limited to knowledge from their training data</li>
+        <li>May reflect biases present in training data</li>
+      </ul>
+    </div>
+
+    <script>
+      document
+        .getElementById("predict-button")
+        .addEventListener("click", predictNextWords);
+
+      // Simulate next word prediction
+      function predictNextWords() {
+        const prompt = document.getElementById("prompt-input").value.trim();
+
+        if (prompt === "") {
+          alert("Please enter some text first!");
+          return;
+        }
+
+        // Show loading indicator
+        document.getElementById("loading-indicator").style.display =
+          "inline-block";
+
+        // Simulate API delay
+        setTimeout(() => {
+          // Hide loading indicator
+          document.getElementById("loading-indicator").style.display = "none";
+
+          // Generate predictions based on the last few words
+          const predictions = generatePredictions(prompt);
+
+          // Update the prediction output
+          displayPredictions(predictions);
+        }, 800);
+      }
+
+      // Simulate generating predictions
+      function generatePredictions(prompt) {
+        // In a real app, this would call an API to an LLM
+        // This is just a simulated response
+
+        // Get the last few words to contextualize predictions
+        const lastWord = prompt.split(" ").pop().toLowerCase();
+
+        // Common word patterns - this is a very simplified simulation
+        const commonFollowUps = {
+          i: [
+            { word: "am", probability: 0.28 },
+            { word: "think", probability: 0.22 },
+            { word: "will", probability: 0.18 },
+            { word: "have", probability: 0.15 },
+            { word: "would", probability: 0.12 },
+            { word: "can't", probability: 0.05 },
+          ],
+          the: [
+            { word: "most", probability: 0.2 },
+            { word: "best", probability: 0.18 },
+            { word: "world", probability: 0.15 },
+            { word: "first", probability: 0.12 },
+            { word: "only", probability: 0.1 },
+            { word: "same", probability: 0.08 },
+          ],
+          is: [
+            { word: "a", probability: 0.25 },
+            { word: "the", probability: 0.2 },
+            { word: "not", probability: 0.18 },
+            { word: "that", probability: 0.15 },
+            { word: "very", probability: 0.12 },
+            { word: "important", probability: 0.1 },
+          ],
+          will: [
+            { word: "be", probability: 0.35 },
+            { word: "have", probability: 0.2 },
+            { word: "not", probability: 0.15 },
+            { word: "make", probability: 0.12 },
+            { word: "help", probability: 0.1 },
+            { word: "continue", probability: 0.08 },
+          ],
+        };
+
+        // Default predictions if we don't have a specific pattern
+        const defaultPredictions = [
+          { word: "the", probability: 0.15 },
+          { word: "a", probability: 0.12 },
+          { word: "in", probability: 0.1 },
+          { word: "and", probability: 0.09 },
+          { word: "to", probability: 0.08 },
+          { word: "of", probability: 0.07 },
+        ];
+
+        // Return either the specific predictions or default ones
+        return commonFollowUps[lastWord] || defaultPredictions;
+      }
+
+      // Display predictions in the UI
+      function displayPredictions(predictions) {
+        const outputElement = document.getElementById("prediction-output");
+
+        // Clear previous predictions
+        outputElement.innerHTML = "";
+
+        // Add each prediction
+        predictions.forEach((pred) => {
+          const predElement = document.createElement("div");
+          predElement.className = "prediction-word";
+
+          const wordSpan = document.createElement("span");
+          wordSpan.textContent = pred.word;
+
+          const probSpan = document.createElement("span");
+          probSpan.className = "probability";
+          probSpan.textContent = `${(pred.probability * 100).toFixed(1)}%`;
+
+          predElement.appendChild(wordSpan);
+          predElement.appendChild(probSpan);
+
+          outputElement.appendChild(predElement);
+        });
+      }
+
+      // Initialize model size comparison
+      function initModelComparison() {
+        const models = [
+          { name: "GPT-4 (1.8T parameters)", size: 1800 },
+          { name: "GPT-3 (175B parameters)", size: 175 },
+          { name: "BERT Large (340M parameters)", size: 0.34 },
+          { name: "GPT-1 (117M parameters)", size: 0.117 },
+          { name: "Traditional ML model (1M parameters)", size: 0.001 },
+        ];
+
+        const comparisonElement = document.getElementById("model-comparison");
+        comparisonElement.innerHTML = "";
+
+        // Calculate max width in percentage (GPT-4 will be 100%)
+        const maxSize = models[0].size;
+
+        // Add each model bar
+        models.forEach((model) => {
+          const barWidth = ((model.size / maxSize) * 100).toFixed(2);
+
+          const modelBar = document.createElement("div");
+          modelBar.className = "model-bar";
+          modelBar.textContent = model.name;
+          modelBar.style.width = "0%"; // Start at 0 for animation
+
+          comparisonElement.appendChild(modelBar);
+
+          // Animate the bar growth after a small delay
+          setTimeout(() => {
+            modelBar.style.width = `${barWidth}%`;
+          }, 100);
+        });
+      }
+
+      // Initialize the visualization on page load
+      window.onload = function () {
+        initModelComparison();
+      };
+    </script>
+  </body>
+</html>
