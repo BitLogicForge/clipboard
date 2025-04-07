@@ -7,10 +7,51 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="css/styles.css" />
+    <!-- Removed inline <style> block -->
   </head>
   <body>
+    <nav class="top-navigation">
+      <div class="nav-container">
+        <div class="logo">
+          <a href="index.html">AI Learning</a>
+        </div>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="perceptron.html">Perceptron</a>
+          <a href="neural-networks.html">Neural Networks</a>
+          <a href="decision-trees.html" class="active">Decision Trees</a>
+          <!-- Removed CNN link -->
+        </div>
+      </div>
+    </nav>
+
     <div class="container">
       <h1>Decision Trees and Random Forests: Interactive Guide</h1>
+
+      <div class="prerequisite">
+        <h3>Prerequisites</h3>
+        <p>Before starting this lesson, it's helpful to understand:</p>
+        <ul>
+          <li>Basic probability concepts</li>
+          <li>The concept of data classification</li>
+          <li>How to interpret simple visualizations</li>
+        </ul>
+        <p>
+          No programming experience or advanced math is required for this
+          lesson!
+        </p>
+      </div>
+
+      <div class="beginner-note">
+        <h3>Beginner's Note</h3>
+        <p>
+          A decision tree is like a flowchart that helps make decisions by
+          asking a series of yes/no questions. Imagine playing a game of "20
+          Questions" to identify an animal - each question narrows down the
+          possibilities until you reach the answer. Decision trees work the same
+          way with data!
+        </p>
+      </div>
 
       <div class="section">
         <h2>1. Understanding Decision Trees</h2>
@@ -56,6 +97,14 @@
       <div class="section">
         <h2>2. Interactive Decision Tree Builder</h2>
 
+        <div class="beginner-note">
+          <p>
+            In this interactive tool, you can build and visualize decision trees
+            for different datasets. Try changing the parameters to see how they
+            affect the tree's structure and prediction accuracy.
+          </p>
+        </div>
+
         <div class="two-columns">
           <div class="column">
             <h3>Dataset Selection</h3>
@@ -83,6 +132,10 @@
                 value="3"
               />
               <span id="max-depth-value">3</span>
+              <p class="parameter-explanation">
+                Controls how many levels deep the tree can grow. Deeper trees
+                can capture more detail but may overfit.
+              </p>
             </div>
             <div class="weight-control">
               <label for="min-samples-split">Min Samples to Split:</label>
@@ -95,6 +148,10 @@
                 value="5"
               />
               <span id="min-samples-split-value">5</span>
+              <p class="parameter-explanation">
+                The minimum number of samples required at a node before it can
+                be split.
+              </p>
             </div>
             <div class="weight-control">
               <label for="impurity-measure">Impurity Measure:</label>
@@ -102,6 +159,9 @@
                 <option value="gini">Gini Impurity</option>
                 <option value="entropy">Entropy</option>
               </select>
+              <p class="parameter-explanation">
+                The method used to decide the best splits in the tree.
+              </p>
             </div>
             <button id="build-tree-btn" class="action-button">
               Build Decision Tree
@@ -132,6 +192,15 @@
 
       <div class="section">
         <h2>3. How Trees Make Decisions</h2>
+
+        <div class="beginner-note">
+          <p>
+            This section shows how a decision tree follows a path to make
+            predictions. Watch how each data point travels down the tree,
+            answering questions at each branch until it reaches a final
+            decision.
+          </p>
+        </div>
 
         <div class="interactive-example">
           <h3>Follow a Sample Through the Tree</h3>
@@ -169,6 +238,13 @@
                 Where p<sub>i</sub> is the proportion of samples that belong to
                 class i
               </p>
+              <div class="beginner-explanation">
+                <p>
+                  Think of Gini impurity as measuring how mixed the data is. A
+                  value of 0 means all samples are of the same class (pure),
+                  while higher values indicate more mixing.
+                </p>
+              </div>
             </div>
             <div class="column">
               <h4>Entropy</h4>
@@ -180,6 +256,13 @@
                 A value of 0 means perfect purity, higher values mean more mixed
                 classes
               </p>
+              <div class="beginner-explanation">
+                <p>
+                  Entropy is like measuring surprise. If all samples are the
+                  same, there's no surprise (entropy = 0). If the data is
+                  perfectly mixed (50/50), the surprise is at maximum.
+                </p>
+              </div>
             </div>
           </div>
           <div id="impurity-visualization"></div>
@@ -188,6 +271,15 @@
 
       <div class="section">
         <h2>4. From Decision Trees to Random Forests</h2>
+
+        <div class="beginner-note">
+          <p>
+            A random forest is like asking multiple experts the same question
+            and taking a vote on the answer. While one decision tree might make
+            mistakes, combining many trees often leads to a more accurate result
+            - this is the power of random forests!
+          </p>
+        </div>
 
         <p>
           While decision trees are intuitive and easy to interpret, they tend to
@@ -210,6 +302,10 @@
                 value="10"
               />
               <span id="n-trees-value">10</span>
+              <p class="parameter-explanation">
+                How many different trees to include in the forest. More trees
+                generally improves accuracy but takes longer to train.
+              </p>
             </div>
             <div class="weight-control">
               <label for="max-features">Max Features per Tree:</label>
@@ -218,10 +314,18 @@
                 <option value="log2">Log2</option>
                 <option value="all">All Features</option>
               </select>
+              <p class="parameter-explanation">
+                How many features each tree considers when making splits.
+                Limiting features increases tree diversity.
+              </p>
             </div>
             <div class="weight-control">
               <label for="bootstrap">Use Bootstrap Sampling:</label>
               <input type="checkbox" id="bootstrap" checked />
+              <p class="parameter-explanation">
+                Whether to randomly sample data with replacement when building
+                each tree.
+              </p>
             </div>
             <button id="build-forest-btn">Build Random Forest</button>
           </div>
@@ -327,12 +431,205 @@
           <div id="feature-importance-chart"></div>
         </div>
       </div>
+
+      <div class="section">
+        <h2>6. Quiz: Test Your Understanding</h2>
+        <div id="decision-tree-quiz">
+          <div class="quiz-question">
+            <p>
+              <strong
+                >1. What is the main difference between a decision tree and a
+                random forest?</strong
+              >
+            </p>
+            <div class="quiz-options">
+              <label
+                ><input type="radio" name="q1" value="a" /> Decision trees are
+                faster but random forests are more accurate</label
+              ><br />
+              <label
+                ><input type="radio" name="q1" value="b" /> Random forests
+                combine multiple decision trees to make predictions</label
+              ><br />
+              <label
+                ><input type="radio" name="q1" value="c" /> Random forests can
+                only handle numerical data</label
+              ><br />
+              <label
+                ><input type="radio" name="q1" value="d" /> Decision trees can
+                only make binary decisions</label
+              >
+            </div>
+            <div
+              class="quiz-feedback"
+              id="feedback-q1"
+              style="display: none"
+            ></div>
+          </div>
+
+          <div class="quiz-question">
+            <p>
+              <strong
+                >2. What does "Gini impurity" measure in a decision
+                tree?</strong
+              >
+            </p>
+            <div class="quiz-options">
+              <label
+                ><input type="radio" name="q2" value="a" /> The total number of
+                features used in the tree</label
+              ><br />
+              <label
+                ><input type="radio" name="q2" value="b" /> How deep the tree
+                has grown</label
+              ><br />
+              <label
+                ><input type="radio" name="q2" value="c" /> The probability of
+                incorrect classification</label
+              ><br />
+              <label
+                ><input type="radio" name="q2" value="d" /> The training time
+                required for the model</label
+              >
+            </div>
+            <div
+              class="quiz-feedback"
+              id="feedback-q2"
+              style="display: none"
+            ></div>
+          </div>
+
+          <div class="quiz-question">
+            <p>
+              <strong
+                >3. Why is bootstrapping (random sampling with replacement) used
+                in random forests?</strong
+              >
+            </p>
+            <div class="quiz-options">
+              <label
+                ><input type="radio" name="q3" value="a" /> To speed up the
+                training process</label
+              ><br />
+              <label
+                ><input type="radio" name="q3" value="b" /> To create diversity
+                among the trees in the forest</label
+              ><br />
+              <label
+                ><input type="radio" name="q3" value="c" /> To reduce the memory
+                requirements</label
+              ><br />
+              <label
+                ><input type="radio" name="q3" value="d" /> To allow processing
+                of missing values in the data</label
+              >
+            </div>
+            <div
+              class="quiz-feedback"
+              id="feedback-q3"
+              style="display: none"
+            ></div>
+          </div>
+
+          <button id="submit-quiz">Check Answers</button>
+          <div id="quiz-result" style="margin-top: 20px"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Key Takeaways</h2>
+        <ul>
+          <li>
+            Decision trees make predictions by asking a series of questions
+            about features, creating a flowchart-like structure.
+          </li>
+          <li>
+            They split data based on criteria like Gini impurity or entropy to
+            create the purest possible leaf nodes.
+          </li>
+          <li>
+            Decision trees are easy to interpret but can easily overfit the
+            training data.
+          </li>
+          <li>
+            Random forests combine multiple decision trees (an ensemble) to
+            improve accuracy and reduce overfitting.
+          </li>
+          <li>
+            Random forests use techniques like bagging (bootstrap aggregating)
+            and feature randomness to create diverse trees.
+          </li>
+          <li>
+            Both methods can handle numerical and categorical data and provide
+            feature importance rankings.
+          </li>
+        </ul>
+      </div>
+
+      <div class="lesson-navigation">
+        <a href="neural-networks.html" class="previous-lesson"
+          >← Previous: Neural Networks</a
+        >
+        <!-- Updated next lesson link -->
+        <a href="index.html" class="next-lesson">Back to Home Page →</a>
+      </div>
     </div>
 
     <!-- Load JavaScript modules -->
+    <!-- Corrected JS paths -->
     <script src="js/decision-tree-data.js"></script>
     <script src="js/decision-tree-visualization.js"></script>
     <script src="js/decision-tree-model.js"></script>
-    <script src="js/random-forest.js"></script>
+    <script src="js/model.js"></script>
+    <!-- Assuming shared model logic -->
+    <script>
+      // Quiz functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const submitQuiz = document.getElementById("submit-quiz");
+        if (submitQuiz) {
+          submitQuiz.addEventListener("click", function () {
+            const correctAnswers = {
+              q1: "b",
+              q2: "c",
+              q3: "b",
+            };
+
+            let score = 0;
+
+            // Check each question
+            for (const question in correctAnswers) {
+              const selected = document.querySelector(
+                `input[name="${question}"]:checked`
+              );
+              const feedbackDiv = document.getElementById(
+                `feedback-${question}`
+              );
+
+              if (selected) {
+                if (selected.value === correctAnswers[question]) {
+                  feedbackDiv.innerHTML = "Correct! ✓";
+                  feedbackDiv.style.color = "green";
+                  score++;
+                } else {
+                  feedbackDiv.innerHTML = "Incorrect ✗";
+                  feedbackDiv.style.color = "red";
+                }
+              } else {
+                feedbackDiv.innerHTML = "Please select an answer";
+                feedbackDiv.style.color = "orange";
+              }
+
+              feedbackDiv.style.display = "block";
+            }
+
+            // Display total score
+            const resultDiv = document.getElementById("quiz-result");
+            resultDiv.innerHTML = `Your score: ${score} out of ${
+              Object.keys(correctAnswers).length
+            }`;
+          });
+        }
+      });
+    </script>
   </body>
 </html>

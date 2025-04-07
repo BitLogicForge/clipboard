@@ -335,83 +335,83 @@ ul li {
   min-height: 100px;
 }
 
-/* CNN Specific Styles */
-.canvas-container {
-  display: flex;
-  justify-content: center;
+/* Centralized styles from HTML files */
+.top-navigation {
   background-color: #f8f9fa;
-  padding: 5px;
-  border-radius: 8px;
-  margin-bottom: 15px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e9ecef;
 }
-
-.kernel-selection {
+.nav-container {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 15px 0;
-}
-
-.kernel-option {
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  padding: 0 20px;
 }
-
-.kernel-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
-  margin: 10px 0;
+.logo a {
+  text-decoration: none;
+  color: #1976d2;
+  font-weight: bold;
+  font-size: 1.2rem;
 }
-
-.kernel-grid input {
-  width: 50px;
-  padding: 5px;
-  text-align: center;
-}
-
-.cnn-visualization {
-  margin: 25px 0;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-}
-
-#convolution-controls {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-top: 15px;
-}
-
-.feature-maps {
-  margin: 25px 0;
-}
-
-.maps-container {
+.nav-links {
   display: flex;
   gap: 20px;
-  flex-wrap: wrap;
-  margin-top: 15px;
 }
-
-.feature-map {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.nav-links a {
+  text-decoration: none;
+  color: #495057;
+  transition: color 0.3s;
 }
-
-.feature-map h4 {
-  margin-bottom: 10px;
+.nav-links a:hover {
+  color: #1976d2;
 }
-
-.architecture-diagram {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
+.nav-links a.active {
+  color: #1976d2;
+  font-weight: bold;
+}
+.beginner-note {
+  background-color: #e8f5e9;
+  border-left: 4px solid #4caf50;
   padding: 15px;
+  margin: 20px 0;
+  border-radius: 4px;
+}
+.prerequisite {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #fff3e0;
+  border-radius: 4px;
+}
+.glossary-term {
+  border-bottom: 1px dotted #1976d2;
+  cursor: help;
+  position: relative;
+}
+.glossary-term:hover::after {
+  content: attr(data-definition);
+  position: absolute;
+  bottom: 24px;
+  left: 0;
   background-color: #f8f9fa;
-  border-radius: 8px;
-  overflow-x: auto;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  width: 200px;
+  z-index: 1;
+  font-size: 0.9rem;
+}
+.lesson-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+.previous-lesson,
+.next-lesson {
+  text-decoration: none;
+  color: #1976d2;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }

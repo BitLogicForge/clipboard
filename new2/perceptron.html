@@ -3,181 +3,538 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Perceptron: Basic Neural Network Concepts</title>
+    <title>Perceptron: Interactive Neural Network Experience</title>
+
+    <!-- External libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
+
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      /* Additional styles for enhanced perceptron visualization */
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f8f9fa;
+        color: #343a40;
+      }
+
+      .hero-section {
+        background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+        color: white;
+        padding: 80px 30px;
+        border-radius: 15px;
+        margin: 30px 0;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(108, 92, 231, 0.2);
+      }
+
+      .hero-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><g fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"><path d="M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63"/><path d="M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764"/><path d="M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880"/><path d="M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382"/><path d="M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-31 229"/></g></svg>');
+        opacity: 0.5;
+      }
+
+      .hero-section h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        position: relative;
+      }
+
+      .hero-section p {
+        font-size: 1.2rem;
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .card {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        padding: 30px;
+        margin-bottom: 30px;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .visualization-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+      }
+
+      .canvas-container {
+        position: relative;
+        margin: 20px auto;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        height: 400px; /* Add fixed height for Chart.js to work properly */
+      }
+
+      #plot-canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+      }
+
+      #perceptron-diagram {
+        display: block;
+        width: 100%;
+        height: 300px;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+      }
+
+      #weights-canvas {
+        width: 100%;
+        height: 350px;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+        justify-content: center;
+      }
+
+      button {
+        background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-family: "Poppins", semibold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 10px rgba(108, 92, 231, 0.2);
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(108, 92, 231, 0.3);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .secondary-button {
+        background: linear-gradient(135deg, #00cec9 0%, #81ecec 100%);
+        box-shadow: 0 4px 10px rgba(0, 206, 201, 0.2);
+      }
+
+      .danger-button {
+        background: linear-gradient(135deg, #d63031 0%, #ff7675 100%);
+        box-shadow: 0 4px 10px rgba(214, 48, 49, 0.2);
+      }
+
+      .info {
+        background-color: #eaeeff;
+        border-left: 5px solid #6c5ce7;
+        padding: 15px 20px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+
+      .beginner-note {
+        background-color: #eefaf3;
+        border-left: 5px solid #00b894;
+        padding: 15px 20px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+
+      .example-point {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+      }
+
+      .point-circle {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 10px;
+      }
+
+      .progress-container {
+        width: 100%;
+        height: 10px;
+        background-color: #eaecef;
+        border-radius: 10px;
+        margin: 10px 0;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        border-radius: 10px;
+        background: linear-gradient(to right, #e74c3c, #f39c12, #2ecc71);
+        transition: width 0.3s ease-in-out;
+      }
+
+      .weight-control {
+        margin-bottom: 15px;
+      }
+
+      .weight-control label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      .weight-control input[type="range"] {
+        width: 100%;
+        max-width: 300px;
+        height: 8px;
+        -webkit-appearance: none;
+        background: linear-gradient(to right, #a29bfe, #6c5ce7);
+        outline: none;
+        border-radius: 10px;
+      }
+
+      .weight-control input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid #6c5ce7;
+        cursor: pointer;
+      }
+
+      .weight-control span {
+        display: inline-block;
+        min-width: 30px;
+        text-align: center;
+        font-weight: bold;
+        margin-left: 10px;
+      }
+
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin: 30px 0;
+      }
+
+      .feature-card {
+        background-color: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .feature-card h3 {
+        color: #6c5ce7;
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 1.4rem;
+      }
+
+      .feature-card p {
+        color: #666;
+        line-height: 1.6;
+      }
+
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        color: white;
+        font-size: 24px;
+      }
+
+      .formula {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        font-family: "Courier New", monospace;
+        line-height: 1.6;
+        overflow-x: auto;
+        margin: 15px 0;
+        text-align: center;
+        font-weight: 500;
+      }
+
+      @media (max-width: 768px) {
+        .hero-section {
+          padding: 50px 20px;
+        }
+
+        .hero-section h1 {
+          font-size: 2rem;
+        }
+
+        .controls {
+          flex-direction: column;
+        }
+
+        button {
+          width: 100%;
+        }
+      }
+
+      /* Animation for neuron activation */
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .animate-pulse {
+        animation: pulse 1.5s infinite ease-in-out;
+      }
+
+      /* Status message styles */
+      .status-message {
+        background-color: #6c5ce7;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 20px 0;
+        font-weight: 500;
+      }
+    </style>
   </head>
   <body>
-    <div class="container">
-      <h1>Understanding Perceptrons: The Building Blocks of Neural Networks</h1>
+    <nav class="top-navigation">
+      <div class="nav-container">
+        <div class="logo">
+          <a href="index.html">AI Learning</a>
+        </div>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="perceptron.html" class="active">Perceptron</a>
+          <a href="neural-networks.html">Neural Networks</a>
+          <a href="decision-trees.html">Decision Trees</a>
+        </div>
+      </div>
+    </nav>
 
-      <div class="section">
-        <h2>1. Introduction to Perceptrons</h2>
+    <div class="container">
+      <div class="hero-section">
+        <h1>Perceptrons: Neural Building Blocks</h1>
         <p>
-          A perceptron is the simplest form of a neural network, designed for
-          binary classification problems. Invented by Frank Rosenblatt in 1957,
-          it serves as the foundation for more complex neural network
-          architectures.
+          Experience the core concept behind neural networks through interactive
+          visualization
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>What is a Perceptron?</h2>
+        <p>
+          A perceptron is the fundamental building block of neural networks,
+          inspired by how neurons work in the human brain. It takes multiple
+          inputs, processes them using weights and a bias, and produces a single
+          output based on an activation function.
         </p>
 
-        <div class="concept">
-          <h3>Key Concept: The Biological Inspiration</h3>
+        <div class="beginner-note">
+          <h3>🧠 Simplified Explanation</h3>
           <p>
-            Perceptrons are inspired by biological neurons. Just as neurons in
-            the brain receive signals through dendrites, process them, and fire
-            if the combined signal is strong enough, a perceptron:
+            Think of a perceptron as a digital neuron that makes simple yes/no
+            decisions. It looks at different pieces of information, gives
+            importance to each one, adds them up, and decides if the total is
+            high enough to activate. It's like a judge in a talent show,
+            reviewing scores and deciding if a contestant passes or fails.
           </p>
-          <ul>
-            <li>Receives inputs (features of data)</li>
-            <li>Applies weights to each input (importance of each feature)</li>
-            <li>Sums the weighted inputs and applies a bias</li>
-            <li>
-              Passes the result through an activation function to produce an
-              output
-            </li>
-          </ul>
         </div>
 
-        <div class="model-diagram">
-          <canvas id="perceptron-diagram" width="500" height="200"></canvas>
-          <div>
-            <p>
-              Perceptron Model: Inputs (x₁, x₂) → Weights (w₁, w₂) → Sum →
-              Activation → Output
-            </p>
+        <div class="visualization-card">
+          <h3>Interactive Perceptron Model</h3>
+          <p>
+            This interactive visualization shows how a perceptron works, with
+            inputs, weights, and activation.
+          </p>
+          <div class="canvas-container" style="height: 300px">
+            <canvas id="perceptron-diagram" width="700" height="300"></canvas>
           </div>
         </div>
       </div>
 
-      <div class="section">
-        <h2>2. How Perceptrons Work</h2>
+      <div class="card">
+        <h2>How Perceptrons Make Decisions</h2>
 
-        <div class="concept">
-          <h3>The Perceptron Formula</h3>
-          <p>Mathematically, a perceptron computes:</p>
-          <div class="formula">
-            output = activation( Σ(weights × inputs) + bias )
-          </div>
-          <p>
-            For a perceptron with two inputs (x₁, x₂), two weights (w₁, w₂), and
-            a bias (b):
-          </p>
-          <div class="formula">output = activation( w₁·x₁ + w₂·x₂ + b )</div>
-          <p>
-            The activation function is typically a step function (for classical
-            perceptrons) or a sigmoid function (for modern implementations).
-          </p>
+        <div class="formula">
+          output = activation( w₁·x₁ + w₂·x₂ + ... + wₙ·xₙ + b )
         </div>
 
-        <div class="two-columns">
-          <div class="column">
-            <h3>The Decision Boundary</h3>
+        <p>
+          A perceptron uses a mathematical formula to make decisions. It
+          multiplies each input (x) by its corresponding weight (w), adds all
+          these values together along with a bias term (b), and then applies an
+          activation function to determine the output.
+        </p>
+
+        <div class="grid-container">
+          <div class="feature-card">
+            <div class="feature-icon">W</div>
+            <h3>Weights</h3>
             <p>
-              For a perceptron with two inputs, the decision boundary is a line
-              in the form:
+              Weights determine the importance of each input feature. Larger
+              weights mean the input has more influence on the perceptron's
+              decision.
             </p>
-            <div class="formula">w₁·x₁ + w₂·x₂ + b = 0</div>
-            <p>This can be rewritten as:</p>
-            <div class="formula">x₂ = (-w₁/w₂)·x₁ - b/w₂</div>
-            <p>Which is a line with:</p>
-            <ul>
-              <li>Slope = -w₁/w₂</li>
-              <li>y-intercept = -b/w₂</li>
-            </ul>
           </div>
 
-          <div class="column">
-            <h3>Perceptron Learning</h3>
+          <div class="feature-card">
+            <div class="feature-icon">B</div>
+            <h3>Bias</h3>
             <p>
-              During training, the perceptron adjusts its weights and bias using
-              the rule:
+              The bias shifts the decision boundary. It allows the perceptron to
+              make better decisions even when inputs are all zeros.
             </p>
-            <div class="formula">
-              w_new = w_old + learning_rate * (expected - predicted) * input
-            </div>
-            <div class="formula">
-              b_new = b_old + learning_rate * (expected - predicted)
-            </div>
-            <p>Where:</p>
-            <ul>
-              <li>learning_rate: Controls how fast the model learns</li>
-              <li>expected: The correct label (0 or 1)</li>
-              <li>predicted: The perceptron's prediction</li>
-              <li>input: The feature value for this weight</li>
-            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">A</div>
+            <h3>Activation</h3>
+            <p>
+              The activation function transforms the weighted sum into the final
+              output, typically using a step function (0 or 1) or sigmoid
+              function (range 0-1).
+            </p>
           </div>
         </div>
 
-        <div id="weights-visualization">
+        <div class="visualization-card">
           <h3>Experiment with Weights and Bias</h3>
-          <div class="weight-control">
-            <label for="weight1">Weight 1 (w₁):</label>
-            <input
-              type="range"
-              id="weight1"
-              min="-2"
-              max="2"
-              step="0.1"
-              value="1"
-            />
-            <span id="weight1-value">1.0</span>
+          <p>
+            Adjust the sliders to see how changing weights and bias affects the
+            decision boundary.
+          </p>
+
+          <div id="weights-visualization">
+            <div class="weight-control">
+              <label for="weight1">Weight 1 (w₁):</label>
+              <input
+                type="range"
+                id="weight1"
+                min="-2"
+                max="2"
+                step="0.1"
+                value="1"
+              />
+              <span id="weight1-value">1.0</span>
+            </div>
+            <div class="weight-control">
+              <label for="weight2">Weight 2 (w₂):</label>
+              <input
+                type="range"
+                id="weight2"
+                min="-2"
+                max="2"
+                step="0.1"
+                value="1"
+              />
+              <span id="weight2-value">1.0</span>
+            </div>
+            <div class="weight-control">
+              <label for="bias">Bias (b):</label>
+              <input
+                type="range"
+                id="bias"
+                min="-2"
+                max="2"
+                step="0.1"
+                value="0"
+              />
+              <span id="bias-value">0.0</span>
+            </div>
+
+            <div class="canvas-container">
+              <canvas id="weights-canvas" width="500" height="400"></canvas>
+            </div>
           </div>
-          <div class="weight-control">
-            <label for="weight2">Weight 2 (w₂):</label>
-            <input
-              type="range"
-              id="weight2"
-              min="-2"
-              max="2"
-              step="0.1"
-              value="1"
-            />
-            <span id="weight2-value">1.0</span>
-          </div>
-          <div class="weight-control">
-            <label for="bias">Bias (b):</label>
-            <input
-              type="range"
-              id="bias"
-              min="-2"
-              max="2"
-              step="0.1"
-              value="0"
-            />
-            <span id="bias-value">0.0</span>
-          </div>
-          <canvas id="weights-canvas" width="300" height="300"></canvas>
         </div>
       </div>
 
-      <div class="section">
-        <h2>3. Interactive Perceptron Demonstration</h2>
+      <div class="card">
+        <h2>Decision Boundaries: The Geometry of Learning</h2>
+
+        <p>
+          In a two-dimensional space, a perceptron's decision boundary is a
+          straight line. In higher dimensions, it becomes a hyperplane that
+          separates two classes. This is why perceptrons are linear classifiers
+          - they can only solve problems that are linearly separable.
+        </p>
+
+        <div class="formula">Decision Boundary: w₁·x₁ + w₂·x₂ + b = 0</div>
 
         <div class="info">
+          <h3>Interactive Perceptron Training</h3>
           <p>
-            This demo shows a perceptron learning to classify points based on
-            which side of a line they fall on. The perceptron learns to
-            approximate the decision boundary (gray line) through training.
+            This demo shows a perceptron learning to classify points. Random
+            data is generated with two classes (blue and red), and the
+            perceptron learns to separate them.
           </p>
           <div class="example-point">
-            <div class="point-circle" style="background-color: blue"></div>
+            <div class="point-circle" style="background-color: #0984e3"></div>
             <span>Class 0 (below the line)</span>
           </div>
           <div class="example-point">
-            <div class="point-circle" style="background-color: red"></div>
+            <div class="point-circle" style="background-color: #e17055"></div>
             <span>Class 1 (above the line)</span>
           </div>
         </div>
 
         <div class="controls">
           <button id="generate-btn">Generate New Data</button>
-          <button id="train-btn">Train Model</button>
+          <button id="train-btn" class="secondary-button">Train Model</button>
           <button id="step-btn">Train Step-by-Step</button>
-          <button id="reset-btn">Reset Model</button>
+          <button id="reset-btn" class="danger-button">Reset Model</button>
         </div>
 
-        <div id="canvas-container">
-          <canvas id="plot-canvas" width="500" height="500"></canvas>
+        <div class="canvas-container">
+          <canvas id="plot-canvas" width="700" height="500"></canvas>
         </div>
 
         <div class="info">
@@ -190,11 +547,11 @@
         </div>
       </div>
 
-      <div class="section">
-        <h2>4. Applications and Limitations</h2>
+      <div class="card">
+        <h2>Applications and Limitations</h2>
 
-        <div class="two-columns">
-          <div class="column">
+        <div class="grid-container">
+          <div class="feature-card">
             <h3>Applications</h3>
             <ul>
               <li>
@@ -211,12 +568,12 @@
               </li>
               <li>
                 <strong>Simple Logic Operations:</strong> Can model AND, OR
-                operations (but not XOR)
+                operations
               </li>
             </ul>
           </div>
 
-          <div class="column">
+          <div class="feature-card">
             <h3>Limitations</h3>
             <ul>
               <li>
@@ -239,12 +596,12 @@
           </div>
         </div>
 
-        <div class="concept">
+        <div class="beginner-note">
           <h3>The XOR Problem</h3>
           <p>
-            A classic limitation of simple perceptrons is their inability to
-            solve the XOR (exclusive OR) problem. This requires multiple
-            perceptrons arranged in layers (multi-layer perceptron or MLP).
+            A classic limitation of perceptrons is their inability to solve the
+            XOR (exclusive OR) problem. This requires multiple perceptrons
+            arranged in layers (multi-layer perceptron or MLP).
           </p>
           <div class="formula">
             XOR Truth Table:<br />
@@ -253,17 +610,46 @@
             1 XOR 0 = 1<br />
             1 XOR 1 = 0
           </div>
-          <p>
-            This problem demonstrates why we need more complex neural networks
-            with hidden layers.
-          </p>
         </div>
+      </div>
+
+      <div class="card">
+        <h2>Key Takeaways</h2>
+        <ul>
+          <li>
+            A perceptron is the simplest form of a neural network, inspired by
+            biological neurons.
+          </li>
+          <li>
+            It makes decisions by calculating a weighted sum of inputs, adding a
+            bias, and applying an activation function.
+          </li>
+          <li>
+            Perceptrons learn by adjusting weights and bias based on prediction
+            errors.
+          </li>
+          <li>
+            They can only solve linearly separable problems and cannot solve the
+            XOR problem on their own.
+          </li>
+          <li>
+            Perceptrons are the fundamental building blocks for more complex
+            neural networks.
+          </li>
+        </ul>
+      </div>
+
+      <div class="lesson-navigation">
+        <a href="index.html" class="previous-lesson">← Back to Home</a>
+        <a href="neural-networks.html" class="next-lesson"
+          >Next: Neural Networks →</a
+        >
       </div>
     </div>
 
     <!-- Load JavaScript modules -->
-    <script src="js/visualization.js"></script>
     <script src="js/model.js"></script>
+    <script src="js/visualization.js"></script>
     <script src="js/app.js"></script>
   </body>
 </html>

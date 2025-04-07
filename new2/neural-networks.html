@@ -5,47 +5,455 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Neural Networks: From Simple to Deep</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
+
+    <!-- Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      /* Additional styles for enhanced neural network visualization */
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f8f9fa;
+        color: #343a40;
+      }
+
+      .hero-section {
+        background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+        color: white;
+        padding: 80px 30px;
+        border-radius: 15px;
+        margin: 30px 0;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(108, 92, 231, 0.2);
+      }
+
+      .hero-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><g fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"><path d="M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63"/><path d="M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764"/><path d="M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880"/><path d="M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382"/><path d="M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-31 229"/></g></svg>');
+        opacity: 0.5;
+      }
+
+      .hero-section h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        position: relative;
+      }
+
+      .hero-section p {
+        font-size: 1.2rem;
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .card {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        padding: 30px;
+        margin-bottom: 30px;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .visualization-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+      }
+
+      .canvas-container {
+        position: relative;
+        margin: 20px auto;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        height: 400px;
+      }
+
+      #plot-canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+        justify-content: center;
+      }
+
+      button {
+        background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-family: "Poppins", semibold;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 10px rgba(108, 92, 231, 0.2);
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(108, 92, 231, 0.3);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .secondary-button {
+        background: linear-gradient(135deg, #00cec9 0%, #81ecec 100%);
+        box-shadow: 0 4px 10px rgba(0, 206, 201, 0.2);
+      }
+
+      .danger-button {
+        background: linear-gradient(135deg, #d63031 0%, #ff7675 100%);
+        box-shadow: 0 4px 10px rgba(214, 48, 49, 0.2);
+      }
+
+      .info {
+        background-color: #eaeeff;
+        border-left: 5px solid #6c5ce7;
+        padding: 15px 20px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+
+      .beginner-note {
+        background-color: #eefaf3;
+        border-left: 5px solid #00b894;
+        padding: 15px 20px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+
+      .feature-card {
+        background-color: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .feature-card h3 {
+        color: #6c5ce7;
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 1.4rem;
+      }
+
+      .feature-card p {
+        color: #666;
+        line-height: 1.6;
+      }
+
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        color: white;
+        font-size: 24px;
+      }
+
+      .formula {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        font-family: "Courier New", monospace;
+        line-height: 1.6;
+        overflow-x: auto;
+        margin: 15px 0;
+        text-align: center;
+        font-weight: 500;
+      }
+
+      .network-canvas-container {
+        background-color: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px auto;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .network-controls {
+        background-color: #eaeeff;
+        border-left: 5px solid #6c5ce7;
+        padding: 20px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+
+      .function-graph {
+        height: 200px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        margin: 15px 0;
+        border: 1px solid #eaeaea;
+      }
+
+      .quiz-question {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+
+      .quiz-options {
+        margin: 15px 0;
+      }
+
+      .quiz-options label {
+        display: block;
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #f1f1f1;
+        transition: background-color 0.2s;
+        cursor: pointer;
+      }
+
+      .quiz-options label:hover {
+        background-color: #e9e9e9;
+      }
+
+      .quiz-feedback {
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+
+      .output-values {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        font-family: "Courier New", monospace;
+      }
+
+      .output-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .output-table th,
+      .output-table td {
+        border: 1px solid #dfe6e9;
+        padding: 8px;
+        text-align: center;
+      }
+
+      .output-table th {
+        background-color: #6c5ce7;
+        color: white;
+      }
+
+      .output-table tr:nth-child(even) {
+        background-color: #f1f3f5;
+      }
+
+      .input-control {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        justify-content: space-between;
+      }
+
+      .input-control label {
+        font-weight: 500;
+        margin-right: 15px;
+        min-width: 80px;
+      }
+
+      .input-control input[type="number"] {
+        width: 80px;
+        padding: 5px;
+        border: 1px solid #dfe6e9;
+        border-radius: 5px;
+        text-align: center;
+      }
+
+      @media (max-width: 768px) {
+        .hero-section {
+          padding: 50px 20px;
+        }
+
+        .hero-section h1 {
+          font-size: 2rem;
+        }
+
+        .controls {
+          flex-direction: column;
+        }
+
+        button {
+          width: 100%;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div class="container">
-      <h1>Interactive Neural Networks: From Simple to Deep</h1>
+    <nav class="top-navigation">
+      <div class="nav-container">
+        <div class="logo">
+          <a href="index.html">AI Learning</a>
+        </div>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="perceptron.html">Perceptron</a>
+          <a href="neural-networks.html" class="active">Neural Networks</a>
+          <a href="decision-trees.html">Decision Trees</a>
+        </div>
+      </div>
+    </nav>
 
-      <div class="section">
-        <h2>1. Understanding Neural Network Architecture</h2>
+    <div class="container">
+      <div class="hero-section">
+        <h1>Interactive Neural Networks: From Simple to Deep</h1>
+        <p>
+          Explore the architecture and behavior of neural networks through
+          interactive visualizations
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>What are Neural Networks?</h2>
         <p>
           Neural networks are computational models inspired by the human brain,
           consisting of layers of interconnected artificial neurons. They excel
           at recognizing patterns and can be trained to perform complex tasks.
         </p>
 
-        <div class="concept">
-          <h3>Key Concept: Network Layers</h3>
-          <p>A typical neural network consists of three types of layers:</p>
+        <div class="beginner-note">
+          <h3>🧠 Simplified Explanation</h3>
+          <p>
+            A neural network is like a team of perceptrons working together in
+            layers. While one perceptron can only draw a straight line to
+            separate data, a neural network can create complex boundaries to
+            solve more difficult problems. Think of it like upgrading from a
+            single judge to a panel of judges with different specialties who
+            vote on the final decision.
+          </p>
+        </div>
+
+        <div class="info">
+          <h3>Prerequisites</h3>
+          <p>Before starting this lesson, it's helpful to understand:</p>
           <ul>
-            <li><strong>Input Layer:</strong> Receives the raw data</li>
             <li>
-              <strong>Hidden Layer(s):</strong> Processes the inputs using
-              weights and activation functions
+              Basic concepts of perceptrons (covered in the previous lesson)
             </li>
-            <li>
-              <strong>Output Layer:</strong> Produces the final prediction or
-              classification
-            </li>
+            <li>Simple linear algebra (vectors and matrices)</li>
+            <li>Basic understanding of functions and graphs</li>
           </ul>
           <p>
-            The "depth" in deep learning refers to the number of hidden layers
-            in the network - deeper networks can learn more complex patterns.
+            If you haven't completed the
+            <a href="perceptron.html">Perceptron lesson</a> yet, we recommend
+            starting there.
           </p>
         </div>
       </div>
 
-      <div class="section">
-        <h2>2. Network Visualization</h2>
+      <div class="card">
+        <h2>Understanding Neural Network Architecture</h2>
+        <p>
+          Neural networks consist of three main types of layers that work
+          together to process information and make predictions.
+        </p>
+
+        <div class="grid-container">
+          <div class="feature-card">
+            <div class="feature-icon">I</div>
+            <h3>Input Layer</h3>
+            <p>
+              Receives the raw data and passes it to the hidden layers. Each
+              neuron in this layer represents a feature in your dataset.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">H</div>
+            <h3>Hidden Layer(s)</h3>
+            <p>
+              Processes the inputs using weights and activation functions.
+              Multiple hidden layers allow the network to learn more complex
+              patterns and hierarchical features.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">O</div>
+            <h3>Output Layer</h3>
+            <p>
+              Produces the final prediction or classification. The number of
+              neurons depends on the task (e.g., one for binary classification,
+              multiple for multi-class problems).
+            </p>
+          </div>
+        </div>
+
+        <p>
+          The "depth" in deep learning refers to the number of hidden layers in
+          the network - deeper networks can learn more complex patterns but
+          require more data and computational resources.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Network Visualization</h2>
+
+        <div class="beginner-note">
+          <p>
+            In this interactive section, you can see how neural networks are
+            structured. Try the different options to visualize simple versus
+            deep networks, and see how changing the architecture affects the
+            network's complexity.
+          </p>
+        </div>
+
         <div class="controls">
           <button id="simple-nn-btn">Simple Network</button>
           <button id="deep-nn-btn">Deep Network</button>
-          <button id="customize-btn">Customize Architecture</button>
+          <button id="customize-btn" class="secondary-button">
+            Customize Architecture
+          </button>
           <button id="randomize-weights-btn">Randomize Weights</button>
         </div>
 
@@ -87,11 +495,18 @@
           <button id="apply-architecture">Apply Changes</button>
         </div>
 
-        <div id="network-canvas-container" class="network-canvas-container">
-          <canvas id="network-canvas" width="900" height="500"></canvas>
+        <div class="visualization-card">
+          <h3>Interactive Network Architecture</h3>
+          <p>
+            This visualization shows how neurons are connected across different
+            layers. Click on connections to see their weights.
+          </p>
+          <div class="canvas-container" style="height: 500px">
+            <canvas id="network-canvas" width="900" height="500"></canvas>
+          </div>
         </div>
 
-        <div id="weights-container" class="info">
+        <div class="info">
           <h3>Weight Information</h3>
           <div id="selected-weight-info">
             Click on a connection to view and adjust its weight
@@ -115,19 +530,22 @@
         </div>
       </div>
 
-      <div class="section">
-        <h2>3. Network Behavior Simulation</h2>
+      <div class="card">
+        <h2>Network Behavior Simulation</h2>
         <p>
           See how changing weights affects the network's behavior. Try adjusting
           weights and observe how the signal flows through the network.
         </p>
 
-        <div class="controls">
-          <button id="propagate-btn">Propagate Signal</button>
-          <button id="clear-signal-btn">Clear Signal</button>
+        <div class="beginner-note">
+          <h3>🧠 How Information Flows</h3>
+          <p>
+            This simulation shows how information flows through a neural
+            network. When you click "Propagate Signal", you're watching how
+            input values (like image pixels or sensor readings) get transformed
+            as they pass through each layer of the network.
+          </p>
         </div>
-
-        <div class="input-controls" id="input-controls"></div>
 
         <div class="formula">
           <strong>Activation Formula:</strong> f(x) = 1 / (1 + e<sup>-x</sup>)
@@ -135,34 +553,47 @@
           Where x is the weighted sum of inputs plus bias
         </div>
 
-        <div class="two-columns">
-          <div class="column">
-            <h3>Output Values</h3>
-            <div id="output-values" class="output-values">
-              Propagate a signal to see outputs
+        <div class="controls">
+          <button id="propagate-btn">Propagate Signal</button>
+          <button id="clear-signal-btn" class="danger-button">
+            Clear Signal
+          </button>
+        </div>
+
+        <div class="visualization-card">
+          <h3>Input Controls</h3>
+          <div class="input-controls" id="input-controls"></div>
+          <div class="grid-container">
+            <div class="feature-card">
+              <h3>Output Values</h3>
+              <div id="output-values" class="output-values">
+                Propagate a signal to see outputs
+              </div>
             </div>
-          </div>
-          <div class="column">
-            <h3>Network Properties</h3>
-            <ul>
-              <li>
-                <strong>Total Parameters:</strong>
-                <span id="parameter-count">0</span>
-              </li>
-              <li>
-                <strong>Network Depth:</strong>
-                <span id="network-depth">0</span>
-              </li>
-              <li><strong>Activation Function:</strong> Sigmoid</li>
-            </ul>
+            <div class="feature-card">
+              <h3>Network Properties</h3>
+              <ul>
+                <li>
+                  <strong>Total Parameters:</strong>
+                  <span id="parameter-count">0</span>
+                </li>
+                <li>
+                  <strong>Network Depth:</strong>
+                  <span id="network-depth">0</span>
+                </li>
+                <li><strong>Activation Function:</strong> Sigmoid</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="section">
-        <h2>4. Comparing Network Architectures</h2>
-        <div class="two-columns">
-          <div class="column">
+      <div class="card">
+        <h2>Comparing Network Architectures</h2>
+
+        <div class="grid-container">
+          <div class="feature-card">
+            <div class="feature-icon">S</div>
             <h3>Simple Networks</h3>
             <p>
               <strong>Advantages:</strong>
@@ -182,7 +613,8 @@
             </ul>
           </div>
 
-          <div class="column">
+          <div class="feature-card">
+            <div class="feature-icon">D</div>
             <h3>Deep Networks</h3>
             <p>
               <strong>Advantages:</strong>
@@ -205,7 +637,7 @@
           </div>
         </div>
 
-        <div class="concept">
+        <div class="info">
           <h3>The Universal Approximation Theorem</h3>
           <p>
             A key mathematical foundation for neural networks states that even a
@@ -216,10 +648,223 @@
           </p>
         </div>
       </div>
+
+      <div class="card">
+        <h2>Common Activation Functions</h2>
+
+        <div class="beginner-note">
+          <h3>🧠 Why Activation Functions Matter</h3>
+          <p>
+            Activation functions add non-linearity to neural networks, allowing
+            them to learn complex patterns. Think of them as decision rules that
+            determine how strongly a neuron should "fire" based on its inputs.
+          </p>
+        </div>
+
+        <div class="grid-container">
+          <div class="feature-card">
+            <div class="feature-icon">σ</div>
+            <h3>Sigmoid</h3>
+            <div class="formula">f(x) = 1 / (1 + e<sup>-x</sup>)</div>
+            <p>
+              Maps input to values between 0 and 1, useful for binary
+              classification.
+            </p>
+            <div class="function-graph" id="sigmoid-graph"></div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">R</div>
+            <h3>ReLU</h3>
+            <div class="formula">f(x) = max(0, x)</div>
+            <p>
+              Simple and computationally efficient, helps reduce the vanishing
+              gradient problem.
+            </p>
+            <div class="function-graph" id="relu-graph"></div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">T</div>
+            <h3>Tanh</h3>
+            <div class="formula">
+              f(x) = (e<sup>x</sup> - e<sup>-x</sup>) / (e<sup>x</sup> +
+              e<sup>-x</sup>)
+            </div>
+            <p>
+              Maps input to values between -1 and 1, often used in hidden
+              layers.
+            </p>
+            <div class="function-graph" id="tanh-graph"></div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">S</div>
+            <h3>Softmax</h3>
+            <div class="formula">
+              f(x<sub>i</sub>) = e<sup>x<sub>i</sub></sup> / Σ e<sup
+                >x<sub>j</sub></sup
+              >
+            </div>
+            <p>
+              Transforms outputs into probabilities that sum to 1, ideal for
+              multi-class classification.
+            </p>
+            <div class="function-graph" id="softmax-graph"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Quiz: Test Your Understanding</h2>
+        <div id="neural-network-quiz">
+          <div class="quiz-question">
+            <p>
+              <strong
+                >1. What is the main advantage of having multiple hidden layers
+                in a neural network?</strong
+              >
+            </p>
+            <div class="quiz-options">
+              <label
+                ><input type="radio" name="q1" value="a" /> They make the
+                network train faster</label
+              ><br />
+              <label
+                ><input type="radio" name="q1" value="b" /> They allow the
+                network to learn more complex patterns</label
+              ><br />
+              <label
+                ><input type="radio" name="q1" value="c" /> They reduce the
+                number of parameters in the model</label
+              ><br />
+              <label
+                ><input type="radio" name="q1" value="d" /> They guarantee the
+                model won't overfit</label
+              >
+            </div>
+            <div
+              class="quiz-feedback"
+              id="feedback-q1"
+              style="display: none"
+            ></div>
+          </div>
+
+          <div class="quiz-question">
+            <p>
+              <strong
+                >2. What does the activation function do in a neural
+                network?</strong
+              >
+            </p>
+            <div class="quiz-options">
+              <label
+                ><input type="radio" name="q2" value="a" /> It initializes the
+                weights</label
+              ><br />
+              <label
+                ><input type="radio" name="q2" value="b" /> It introduces
+                non-linearity to the model</label
+              ><br />
+              <label
+                ><input type="radio" name="q2" value="c" /> It reduces
+                overfitting</label
+              ><br />
+              <label
+                ><input type="radio" name="q2" value="d" /> It determines the
+                learning rate</label
+              >
+            </div>
+            <div
+              class="quiz-feedback"
+              id="feedback-q2"
+              style="display: none"
+            ></div>
+          </div>
+
+          <div class="quiz-question">
+            <p>
+              <strong
+                >3. According to the Universal Approximation Theorem, what can a
+                neural network with just one hidden layer do?</strong
+              >
+            </p>
+            <div class="quiz-options">
+              <label
+                ><input type="radio" name="q3" value="a" /> Only solve linear
+                problems</label
+              ><br />
+              <label
+                ><input type="radio" name="q3" value="b" /> Approximate any
+                continuous function with enough neurons</label
+              ><br />
+              <label
+                ><input type="radio" name="q3" value="c" /> Generate new data
+                samples</label
+              ><br />
+              <label
+                ><input type="radio" name="q3" value="d" /> Train without any
+                data</label
+              >
+            </div>
+            <div
+              class="quiz-feedback"
+              id="feedback-q3"
+              style="display: none"
+            ></div>
+          </div>
+
+          <button id="submit-quiz">Check Answers</button>
+          <div id="quiz-result" style="margin-top: 20px"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Key Takeaways</h2>
+        <ul>
+          <li>
+            Neural networks are composed of layers of interconnected neurons
+            (perceptrons).
+          </li>
+          <li>
+            They consist of an input layer, one or more hidden layers, and an
+            output layer.
+          </li>
+          <li>
+            Hidden layers allow networks to learn complex, non-linear patterns
+            that single perceptrons cannot.
+          </li>
+          <li>
+            "Deep" networks have multiple hidden layers, enabling them to learn
+            hierarchical features.
+          </li>
+          <li>
+            Activation functions (like Sigmoid, ReLU, Tanh) introduce
+            non-linearity, which is crucial for learning complex relationships.
+          </li>
+          <li>
+            The Universal Approximation Theorem states that even simple networks
+            can approximate functions, but deeper networks are often more
+            efficient.
+          </li>
+        </ul>
+      </div>
+
+      <div class="lesson-navigation">
+        <a href="perceptron.html" class="previous-lesson"
+          >← Previous: Perceptron</a
+        >
+        <a href="decision-trees.html" class="next-lesson"
+          >Next: Decision Trees →</a
+        >
+      </div>
     </div>
 
     <!-- Load JavaScript modules -->
+    <script src="js/model.js"></script>
+    <script src="js/visualization.js"></script>
     <script src="js/network-visualization.js"></script>
     <script src="js/network-simulation.js"></script>
+    <script src="js/app.js"></script>
   </body>
 </html>
